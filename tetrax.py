@@ -1,7 +1,7 @@
 import pygame
 import sys
 
-from block import Block
+# from block import Block
 from tile_L import Tile_L
 
 
