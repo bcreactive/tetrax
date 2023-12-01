@@ -22,7 +22,7 @@ class Game:
         self.play_field_color = (100, 100, 100)
         self.play_field.fill(self.play_field_color)
 
-        self.drop_speed = 20
+        self.drop_speed = 40
         self.counter = 0
 
         # Tile position
@@ -33,30 +33,27 @@ class Game:
         self.moving_blocks = []
         self.static_blocks = []
 
+        self.moving_tile = []
+
         self.game_active = False
+        self.tile_active = False
         # self.create_tile(self.tile_1_pos[0])
         self.tile = Tile_L(self, self.x, self.y)
-        self.tile.create_tile(self.tile_posture)
+        self.tile.create_tile_blocks()
   
     def run_game(self):
         
         while True:
-            # if not self.moving_blocks:
-            #     self.create_new_tile(self.tile_1_pos[0])
+            # print(self.y)
+            # if self.game_active:  
+            ## if not self.moving_blocks:
+            #     self.tile.create_tile(self.tile_posture) 
             self.check_events()
-            self.tile.update()
-            # if self.game_active:
-            # self.check_borders(self.play_field_rect)
-            # self.check_turn()
+            self.check_borders(self.play_field_rect)
+            self.update_posture()
             # self.check_drop()
-            # for block in self.moving_blocks:  
-            #     contact = block.check_bottom()
-            #     if contact:
-            #         for block in self.moving_blocks:
-            #             block.moving = False
-            #             self.static_blocks.append(block)
-            #             self.moving_blocks.remove(block)
-                # block.update()                      
+            self.tile.update()
+                     
             self.update_screen()
             self.clock.tick(self.fps)
             # self.check_drop()
@@ -67,107 +64,81 @@ class Game:
                 sys.exit()     
 
             # if self.game_active:
-            buffer = []
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    # if self.moving_blocks and not buffer:
-                        if self.tile.leftmove_possible:
-                            for i in self.tile.blocks:
-                                i.x -= 40
-                            buffer.append("event")
-                        # for block in self.moving_blocks:
-                        self.tile.moving_left = True
+                    if self.tile.leftmove_possible:
+                        for i in self.tile.blocks:
+                            i.x -= 40
+                    self.tile.moving_left = True
                         
                 if event.key == pygame.K_RIGHT:
-                    # if self.moving_blocks and not buffer:
-                        # if self.moving_blocks[0].rightmove_possible:
-                        if self.tile.rightmove_possible:
-                            for i in self.tile.blocks:
-                                i.x += 40
-                            buffer.append("event")
-                        # for block in self.moving_blocks:
-                        self.tile.moving_right = True
+                    if self.tile.rightmove_possible:
+                        for i in self.tile.blocks:
+                            i.x += 40
+                    self.tile.moving_right = True
                          
                 if event.key == pygame.K_m:
                     self.turn_right()
+
                 if event.key == pygame.K_n:
                     self.turn_left()
-            buffer = []
                     
     def check_borders(self, field_rect):
-        for block in self.moving_blocks:
+        for block in self.tile.blocks:
             if block.rect.left <= field_rect.left:
-                self.lock_left()
+                self.tile.leftmove_possible = False  
+                # self.lock_left()
                 return
             if block.rect.right >= field_rect.right:
-                self.lock_right()    
+                self.tile.rightmove_possible = False  
+                # self.lock_right()    
                 return             
             if (block.rect.left >= field_rect.left or
                 block.rect.right <= field_rect.right):
-                self.unlock()
+                self.tile.rightmove_possible = True
+                self.tile.leftmove_possible = True
+                # self.unlock()
 
-    def create_new_tile(self, tile_pos):
-        for pos in tile_pos:
-            block = Block(self, pos[0], pos[1])
-            self.moving_blocks.append(block)
-    
+    # def check_drop(self):
+    #     self.counter += 1
+    #     if self.counter == self.drop_speed:
+    #         self.y += 40 
+    #         self.counter = 0    
+    # def create_new_tile(self, tile_pos):
+    #     for pos in tile_pos:
+    #         block = Block(self, pos[0], pos[1])
+    #         # self.moving_blocks.append(block)
+    #         self.moving_tile.append(self.tile)
+
+    def update_posture(self):
+        pass
+
     def check_turn(self):
         pass
 
-    def check_drop(self):
-        self.counter += 1
-        if self.counter == self.drop_speed:
-            if self.moving_blocks:
-                self.t_y += 40
-            self.counter = 0
-
     def lock_left(self):
-        for i in self.moving_blocks:
-            i.leftmove_possible = False        
-        # print("left locked")
+        self.tile.leftmove_possible = False        
 
     def lock_right(self):
-        for i in self.moving_blocks:
-            i.rightmove_possible = False           
-        # print("right locked") 
+        self.tile.rightmove_possible = False           
 
     def unlock(self):
-        for i in self.moving_blocks:    
-            i.rightmove_possible = True
-            i.leftmove_possible = True
-        # print("unlocked")
+        self.tile.rightmove_possible = True
+        self.tile.leftmove_possible = True
+
 
     def turn_right(self):
         if self.tile_posture == 3:
             self.tile_posture = 0
-            # self.moving_blocks = []
-            # self.create_tile(self.tile_1_pos[self.tile_posture])
         else:
             self.tile_posture += 1
-        # for i in self.moving_blocks:
-        #     self.moving_blocks.remove(i)
-        # self.moving_blocks = []
-        # self.create_tile(self.tile_1_pos[self.tile_posture])
-            # block = Block(self, self.tile_1_pos[self.tile_posture][0], 
-            #               self.tile_1_pos[self.tile_posture][1])
-            # self.moving_blocks.append(block)
-        # self.create_tile(self.tile_1_pos[self.tile_posture])
-        # print(self.tile_posture)
 
     def turn_left(self):
         if self.tile_posture == 0:
             self.tile_posture = 3
-            self.moving_blocks = []
-            self.create_tile(self.tile_1_pos[self.tile_posture])
         else:
             self.tile_posture -= 1
-            self.moving_blocks = []
-            self.create_tile(self.tile_1_pos[self.tile_posture])
 
-    # def create_tile(self, tile_pos):
-    #     for pos in tile_pos:
-    #         block = Block(self, pos[0], pos[1])
-    #         self.moving_blocks.append(block)
 
     def update_screen(self):
         self.screen.fill(self.bg_color)
