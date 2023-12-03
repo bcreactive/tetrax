@@ -10,6 +10,7 @@ class Tile_L:
         self.drop_speed = game.drop_speed
         self.counter = 0
         self.posture = 0
+        
         self.tile_positions = [[(0, 0), 
                                 (0, 40), 
                                 (0, 80), 
@@ -71,9 +72,7 @@ class Tile_L:
     def update_tile_blocks(self):
         if not self.posture == self.game.tile_posture:
             self.posture = self.game.tile_posture
-            # self.x = self.game.x
-            # self.y = self.game.y
-            
+
             if self.moving:
                 self.game.moving_blocks = []
                 for i in self.tile_positions[self.posture]:

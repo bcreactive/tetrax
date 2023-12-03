@@ -1,7 +1,6 @@
 import pygame
 import sys
 
-# from block import Block
 from tile_L import Tile_L
 
 
@@ -25,22 +24,15 @@ class Game:
         self.drop_speed = 40
         self.counter = 0
 
-        # Tile position
         self.x = 160
         self.y = 0
-
         self.tile_posture = 0
+
         self.moving_blocks = []
         self.static_blocks = []
 
-        self.moving_tile = []
-
-        self.game_active = False
-        self.tile_active = False
-
         self.tile = Tile_L(self, self.x, self.y)
         self.tile.create_tile_blocks()
-
 
     def run_game(self):     
         while True:
