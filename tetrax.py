@@ -30,9 +30,9 @@ class Game:
         self.tile_posture = 0
 
         self.moving_blocks = []
+        self.moving_rects = []
         self.static_blocks = []
-        # self.moving_tile = []
-        self.tiles = []
+        # self.tiles = []
 
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
         self.next_tile = self.get_next_tile()
@@ -48,7 +48,9 @@ class Game:
                 self.tile_posture = 0
                 self.tile = Tile(self, self.x, self.y, self.next_tile)
                 self.tile.create_tile_blocks()
-                self.tiles.append(self.tile)
+                print(self.moving_blocks)
+                print(self.static_blocks)
+                # self.tiles.append(self.tile)
             self.check_events()
             self.check_bottom()
             
@@ -70,14 +72,14 @@ class Game:
                     if self.tile.leftmove_possible and self.tile.moving:
                         self.x -= 40
                         for i in self.moving_blocks:
-                            i.x -= 40
+                            i.rect.x -= 40
                     self.tile.moving_left = True
                         
                 if event.key == pygame.K_RIGHT:
                     if self.tile.rightmove_possible and self.tile.moving:
                         self.x += 40
                         for i in self.moving_blocks:
-                            i.x += 40
+                            i.rect.x += 40
                     self.tile.moving_right = True
                          
                 if event.key == pygame.K_m:
@@ -88,7 +90,6 @@ class Game:
 
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
-        # self.posture = 0
         return next_tile
 
     def check_bottom(self):
@@ -97,13 +98,10 @@ class Game:
                 self.tile.moving = False
                 for j in self.moving_blocks:
                     self.static_blocks.append(j)
-                # self.static_tiles.append(self.current_tile) 
-                self.moving_blocks = []  
-                # self.current_tile = []
+                self.moving_blocks = [] 
+                # self.moving_rects = [] 
                 self.x = 160
                 self.y = 0
-                # print(self.moving_blocks)
-                # print(self.static_blocks)  
                 return
         
     def tile_step(self):
@@ -112,21 +110,21 @@ class Game:
             if self.counter == self.drop_speed:          
                 self.y += 40
                 for i in self.moving_blocks:  
-                    i.y += 40
+                    i.rect.y += 40
                     self.counter = 0
             
     def check_borders(self, field_rect):
         for block in self.moving_blocks:
-            if block.left <= field_rect.left:
+            if block.rect.left <= field_rect.left:
                 self.tile.leftmove_possible = False  
                 return
             
-            if block.right >= field_rect.right:
+            if block.rect.right >= field_rect.right:
                 self.tile.rightmove_possible = False  
                 return  
                        
-            if (block.left >= field_rect.left or
-                block.right <= field_rect.right):
+            if (block.rect.left >= field_rect.left or
+                block.rect.right <= field_rect.right):
                 self.tile.rightmove_possible = True
                 self.tile.leftmove_possible = True
 
@@ -139,24 +137,15 @@ class Game:
                 self.tile_posture += 1 
             if self.tile_posture > 3:
                 self.tile_posture = 0
-            # print(len(self.tile.tile_positions))
 
         elif len(self.tile.tile_positions) == 2:
             if not self.tile_posture > 1:
                 self.tile_posture += 1 
             if self.tile_posture > 1:
                 self.tile_posture = 0
-            # print(len(self.tile.tile_positions))
 
         elif len(self.tile.tile_positions) == 1:
             self.tile_posture = 0
-
-        print(self.tile_posture)
-        # if self.tile_posture == 3:
-        #     self.tile_posture = 0
-        # else:
-        #     self.tile_posture += 1
-            # print(len(self.tile.tile_positions))
 
     def turn_left(self):
         if len(self.tile.tile_positions) == 4:     
@@ -164,31 +153,23 @@ class Game:
                 self.tile_posture -= 1 
             if self.tile_posture < 0:
                 self.tile_posture = 3
-            # print(len(self.tile.tile_positions))
+
         elif len(self.tile.tile_positions) == 2:
             if not self.tile_posture < 0:
                 self.tile_posture -= 1 
             if self.tile_posture < 0:
                 self.tile_posture = 1
-            # print(len(self.tile.tile_positions))
+
         elif len(self.tile.tile_positions) == 1:
             self.tile_posture = 0
-            # print(len(self.tile.tile_positions))
-        print(self.tile_posture)
-
-        # print(self.tile_posture)
-        # if self.tile_posture == 0:
-        #     self.tile_posture = 3
-        # else:
-        #     self.tile_posture -= 1
-
+       
     def update_screen(self):
         self.screen.fill(self.bg_color)
         self.screen.blit(self.play_field, (0, 0))
         for block in self.moving_blocks:      
-            pygame.draw.rect(self.screen, self.tile.color, block)
+            pygame.draw.rect(self.screen, block.color, block)
         for block in self.static_blocks:
-            pygame.draw.rect(self.screen, self.tile.color, block)
+            pygame.draw.rect(self.screen, block.color, block)
         pygame.display.flip()
 
 pygame.quit()
