@@ -2,7 +2,8 @@ import pygame
 import sys
 from random import choice
 
-from tile import Tile
+from tile import Tile, Block
+
 
 
 class Game:
@@ -30,9 +31,8 @@ class Game:
         self.tile_posture = 0
 
         self.moving_blocks = []
-        self.moving_rects = []
+        # self.moving_rects = []
         self.static_blocks = []
-        # self.tiles = []
 
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
         self.next_tile = self.get_next_tile()
@@ -48,16 +48,15 @@ class Game:
                 self.tile_posture = 0
                 self.tile = Tile(self, self.x, self.y, self.next_tile)
                 self.tile.create_tile_blocks()
-                print(self.moving_blocks)
-                print(self.static_blocks)
-                # self.tiles.append(self.tile)
+
             self.check_events()
-            self.check_bottom()
+            # self.check_bottom()
             
             self.tile_step()
             self.check_borders(self.play_field_rect)
             self.tile.update()
-            self.check_turn()
+            # self.check_collision()
+            self.check_bottom()
             
             self.update_screen()
             self.clock.tick(self.fps)
@@ -99,11 +98,10 @@ class Game:
                 for j in self.moving_blocks:
                     self.static_blocks.append(j)
                 self.moving_blocks = [] 
-                # self.moving_rects = [] 
                 self.x = 160
                 self.y = 0
                 return
-        
+    
     def tile_step(self):
         if self.tile.moving:  
             self.counter += 1
@@ -128,40 +126,35 @@ class Game:
                 self.tile.rightmove_possible = True
                 self.tile.leftmove_possible = True
 
-    def check_turn(self):
-        pass
-
     def turn_right(self):
-        if len(self.tile.tile_positions) == 4:     
-            if not self.tile_posture > 3:
-                self.tile_posture += 1 
-            if self.tile_posture > 3:
-                self.tile_posture = 0
 
-        elif len(self.tile.tile_positions) == 2:
-            if not self.tile_posture > 1:
-                self.tile_posture += 1 
-            if self.tile_posture > 1:
-                self.tile_posture = 0
+        # if self.tile.rightturn_possible:
+            if len(self.tile.tile_positions) == 4:     
+                if self.tile_posture >= 0:
+                    self.tile_posture += 1 
+                if self.tile_posture > 3:
+                    self.tile_posture = 0
 
-        elif len(self.tile.tile_positions) == 1:
-            self.tile_posture = 0
+            elif len(self.tile.tile_positions) == 2:
+                if self.tile_posture >= 0:
+                    self.tile_posture += 1 
+                if self.tile_posture > 1:
+                    self.tile_posture = 0
 
     def turn_left(self):
-        if len(self.tile.tile_positions) == 4:     
-            if not self.tile_posture < 0:
-                self.tile_posture -= 1 
-            if self.tile_posture < 0:
-                self.tile_posture = 3
 
-        elif len(self.tile.tile_positions) == 2:
-            if not self.tile_posture < 0:
-                self.tile_posture -= 1 
-            if self.tile_posture < 0:
-                self.tile_posture = 1
-
-        elif len(self.tile.tile_positions) == 1:
-            self.tile_posture = 0
+        # if self.tile.leftturn_possible:
+            if len(self.tile.tile_positions) == 4:     
+                if self.tile_posture >= 0:
+                    self.tile_posture -= 1 
+                if self.tile_posture < 0:
+                    self.tile_posture = 3
+                
+            elif len(self.tile.tile_positions) == 2:
+                if self.tile_posture >= 0:
+                    self.tile_posture -= 1 
+                if self.tile_posture < 0:
+                    self.tile_posture = 1
        
     def update_screen(self):
         self.screen.fill(self.bg_color)
