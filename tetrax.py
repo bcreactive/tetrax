@@ -94,7 +94,7 @@ class Game:
 
     def check_bottom(self):
         for i in self.moving_blocks:
-            if i.bottom >= self.screen_rect.bottom:
+            if i.rect.bottom >= self.screen_rect.bottom:
                 self.tile.moving = False
                 for j in self.moving_blocks:
                     self.static_blocks.append(j)

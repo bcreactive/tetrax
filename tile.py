@@ -14,8 +14,6 @@ class Tile:
         
         self.tile_positions = self.get_tile_position(self.tile)
 
-        # self.color = self.get_color(self.tile)
-
         self.rightmove_possible = True
         self.leftmove_possible = True
         self.moving_right = False
@@ -139,43 +137,14 @@ class Tile:
                         ]
             return positions
 
-    # def get_color(self, tile):
-    #     if tile == "L":
-    #         color = (221, 0, 0)
-    #         return color
-        
-    #     elif tile == "Rev_L":
-    #         color = (0, 221, 0)
-    #         return color
-        
-    #     elif tile == "Bloc":
-    #         color = (221, 0, 221)
-    #         return color
-        
-    #     elif tile == "Z":
-    #         color = (221, 221, 0)
-    #         return color
-        
-    #     elif tile == "Rev_Z":
-    #         color = (0, 0, 221)
-    #         return color
-        
-    #     elif tile == "Tri":
-    #         color = (0, 221, 221)
-    #         return color
-        
-    #     elif tile == "Bar":
-    #         color = (221, 221, 221)
-    #         return color
-
     def create_tile_blocks(self):
         self.game.x = 160
         self.game.y = 0
+
         for i in self.tile_positions[0]:
             block = Block(self.x + i[0], self.y + i[1], self.tile)
-            # block = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
             self.game.moving_blocks.append(block)
-            self.game.moving_rects.append(block.rect)
+            # self.game.moving_rects.append(block.rect)
             self.game.tile_posture = 0
         self.moving = True
     
@@ -187,9 +156,8 @@ class Tile:
                 self.game.moving_blocks = []
                 for i in self.tile_positions[self.posture]:
                     block = Block(self.x + i[0], self.y + i[1], self.tile)
-                    # block = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
                     self.game.moving_blocks.append(block)
-                    self.game.moving_rects.append(block.rect)
+                    # self.game.moving_rects.append(block.rect)
 
     def update(self):       
         self.x = self.game.x
