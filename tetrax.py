@@ -22,12 +22,14 @@ class Game:
         self.play_field_color = (100, 100, 100)
         self.play_field.fill(self.play_field_color)
 
-        self.drop_speed = 40
+        self.drop_speed = 60
         self.counter = 0
 
         self.x = 160
         self.y = 0
         self.tile_posture = 0
+
+        # self.check_full_lines()
 
         self.moving_blocks = []
         self.static_blocks = []
@@ -49,13 +51,12 @@ class Game:
             
             self.check_events()
 
-            # self.tile_step()
-            # self.tile.update()
             self.check_borders(self.play_field_rect)
             self.check_collision()
             self.check_bottom()
             self.tile_step()
             self.tile.update()
+            # self.check_full_lines()
             
             self.update_screen()
             self.clock.tick(self.fps)
@@ -79,6 +80,12 @@ class Game:
                         for i in self.moving_blocks:
                             i.rect.x += 40
                     self.tile.moving_right = True
+                
+                if event.key == pygame.K_DOWN:
+                    if self.tile.moving:
+                        self.x += 40
+                        for i in self.moving_blocks:
+                            i.rect.y += 40
                          
                 if event.key == pygame.K_m:
                     self.turn_right()
@@ -116,7 +123,7 @@ class Game:
                 self.y = 0
                 testrect = ""
                 return
-            
+    
     def tile_step(self):
         if self.tile.moving:  
             self.counter += 1
@@ -141,9 +148,77 @@ class Game:
                 self.tile.rightmove_possible = True
                 self.tile.leftmove_possible = True
 
-    def turn_right(self):
+    def check_right_turn(self):
+        testrects = []
+        testposture = 0
+        
+        if len(self.tile.tile_positions) == 4:     
+            if not self.tile_posture == 3:
+                testposture = self.tile_posture + 1 
+            if self.tile_posture == 3:
+                testposture = 0
 
-        # if self.tile.rightturn_possible:
+        elif len(self.tile.tile_positions) == 2:
+            if not self.tile_posture == 1:
+                testposture = self.tile_posture + 1 
+            if self.tile_posture == 1:
+                testposture = 0
+                
+        print(self.tile_posture)
+        print(testposture)
+        print("\n")
+
+        for i in self.tile.tile_positions[testposture]:
+            testrect = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
+            testrects.append(testrect)
+        
+        for i in testrects:
+            if (i.left < self.play_field_rect.left or
+                i.right > self.play_field_rect.right):
+                testposture = 0
+                # testrects = []
+                return False
+            else:
+                # testrects = []
+                return True
+            
+    def check_left_turn(self):
+        testrects = []
+        testposture = 0
+
+        if len(self.tile.tile_positions) == 4:     
+            if not self.tile_posture == 0:
+                testposture = self.tile_posture - 1 
+            if self.tile_posture == 0:
+                testposture = 3
+                
+        elif len(self.tile.tile_positions) == 2:
+            if not self.tile_posture == 0:
+                testposture = self.tile_posture - 1 
+            if self.tile_posture == 0:
+                testposture = 1
+        
+        print(self.tile_posture)
+        print(testposture)
+        print("\n")
+
+        for i in self.tile.tile_positions[testposture]:
+            testrect = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
+            testrects.append(testrect)
+        
+        for i in testrects:
+            if (i.left < self.play_field_rect.left or
+                i.right > self.play_field_rect.right):
+                testposture = 0
+                # testrects = []
+                return False
+            else:
+                # testrects = []
+                return True 
+            
+    def turn_right(self):
+        right_turn_possible = self.check_right_turn()
+        if right_turn_possible:
             if len(self.tile.tile_positions) == 4:     
                 if self.tile_posture >= 0:
                     self.tile_posture += 1 
@@ -157,8 +232,8 @@ class Game:
                     self.tile_posture = 0
 
     def turn_left(self):
-
-        # if self.tile.leftturn_possible:
+        left_turn_possible = self.check_left_turn()
+        if left_turn_possible:
             if len(self.tile.tile_positions) == 4:     
                 if self.tile_posture >= 0:
                     self.tile_posture -= 1 
@@ -170,14 +245,45 @@ class Game:
                     self.tile_posture -= 1 
                 if self.tile_posture < 0:
                     self.tile_posture = 1
+
+    def check_side_move(self):
+        pass
+
+    def check_full_lines(self):
+        # testrects = self.create_testrects()
+        # index = 0
+        # for i in testrects[index]:
+        #     if i == self.static_blocks[i].rect:
+                pass
+        
+    # def create_testrects(self):
+    #     testrects = []
+    #     linerects = []
+    #     x = 0
+    #     y = 0
+
+    #     for i in range(18):
+    #         for i in range(10):
+    #             testrect = pygame.Rect(x, y, 40, 40)
+    #             linerects.append(testrect)
+    #             x += 40
+    #         testrects.append(linerects)
+    #         linerects = []
+    #         x = 0
+    #         y += 40
+
+    #     return testrects
+
        
     def update_screen(self):
         self.screen.fill(self.bg_color)
         self.screen.blit(self.play_field, (0, 0))
         for block in self.moving_blocks:      
             pygame.draw.rect(self.screen, block.color, block)
+            pygame.draw.rect(self.screen, (0, 0, 0), block, width=3)
         for block in self.static_blocks:
             pygame.draw.rect(self.screen, block.color, block)
+            pygame.draw.rect(self.screen, (0, 0, 0), block, width=3)
         pygame.display.flip()
 
 pygame.quit()
