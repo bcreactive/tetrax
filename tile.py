@@ -140,68 +140,6 @@ class Tile:
                         ]
             return positions
 
-    # 
-    # def turn_right_possible(self):
-    #     if len(self.tile_positions) == 4:     
-    #         if self.posture == 3:
-    #             self.test_posture = self.posture + 1 
-    #         if self.posture == 3:
-    #             self.test_posture = 0
-    #         return self.check_border_collision(self.test_posture)
-
-    #     elif len(self.tile_positions) == 2:
-    #         if not self.posture > 0:
-    #             self.test_posture = self.posture + 1 
-    #         if self.posture > 1:
-    #             self.test_posture = 0
-    #         return self.check_border_collision(self.test_posture)
-        
-    #     elif len(self.tile_positions) == 1:
-    #         # self.test_posture = self.posture
-    #         return self.check_border_collision(self.posture)
-
-    # def turn_left_possible(self):       
-    #     if len(self.tile_positions) == 4:     
-    #         if not self.posture <= 0:
-    #             self.test_posture = self.posture - 1 
-    #         if self.posture < 0:
-    #             self.test_posture = 3
-    #         return self.check_border_collision(self.test_posture)
-
-    #     elif len(self.tile_positions) == 2:
-    #         if not self.posture <= 0:
-    #             self.test_posture = self.posture - 1 
-    #         if self.posture < 0:
-    #             self.test_posture = 1
-    #         return self.check_border_collision(self.test_posture)
-        
-    #     elif len(self.tile_positions) == 1:
-    #         # posture = self.posture
-    #         return self.check_border_collision(self.posture)
-
-    # def check_border_collision(self, posture):
-    #     test_blocks = []
-    #     # print(posture)
-    #     # for i in self.tile_positions[posture]:
-    #     #     block = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
-    #     #     test_blocks.append(block)
-    #     for i in self.tile_positions[posture]:
-    #         block = Block(self.x + i[0], self.y + i[1], self.tile)
-    #         test_blocks.append(block)
-
-    #     for i in test_blocks:
-    #         if i.rect.x < self.game.play_field_rect.x:
-    #             test_blocks = []
-    #             self.test_posture = 0
-    #             return True
-    #         if i.rect.x > self.game.play_field_rect.x:
-    #             test_blocks = []
-    #             self.test_posture = 0
-    #             return True
-    #         else:
-    #             self.test_posture = 0
-    #             return False
-        
     def create_tile_blocks(self):
         self.game.x = 160
         self.game.y = 0
@@ -265,3 +203,66 @@ class Block:
         elif tile == "Bar":
             color = (221, 221, 221)
             return color
+        
+    # 
+    # def turn_right_possible(self):
+    #     if len(self.tile_positions) == 4:     
+    #         if self.posture == 3:
+    #             self.test_posture = self.posture + 1 
+    #         if self.posture == 3:
+    #             self.test_posture = 0
+    #         return self.check_border_collision(self.test_posture)
+
+    #     elif len(self.tile_positions) == 2:
+    #         if not self.posture > 0:
+    #             self.test_posture = self.posture + 1 
+    #         if self.posture > 1:
+    #             self.test_posture = 0
+    #         return self.check_border_collision(self.test_posture)
+        
+    #     elif len(self.tile_positions) == 1:
+    #         # self.test_posture = self.posture
+    #         return self.check_border_collision(self.posture)
+
+    # def turn_left_possible(self):       
+    #     if len(self.tile_positions) == 4:     
+    #         if not self.posture <= 0:
+    #             self.test_posture = self.posture - 1 
+    #         if self.posture < 0:
+    #             self.test_posture = 3
+    #         return self.check_border_collision(self.test_posture)
+
+    #     elif len(self.tile_positions) == 2:
+    #         if not self.posture <= 0:
+    #             self.test_posture = self.posture - 1 
+    #         if self.posture < 0:
+    #             self.test_posture = 1
+    #         return self.check_border_collision(self.test_posture)
+        
+    #     elif len(self.tile_positions) == 1:
+    #         # posture = self.posture
+    #         return self.check_border_collision(self.posture)
+
+    # def check_border_collision(self, posture):
+    #     test_blocks = []
+    #     # print(posture)
+    #     # for i in self.tile_positions[posture]:
+    #     #     block = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
+    #     #     test_blocks.append(block)
+    #     for i in self.tile_positions[posture]:
+    #         block = Block(self.x + i[0], self.y + i[1], self.tile)
+    #         test_blocks.append(block)
+
+    #     for i in test_blocks:
+    #         if i.rect.x < self.game.play_field_rect.x:
+    #             test_blocks = []
+    #             self.test_posture = 0
+    #             return True
+    #         if i.rect.x > self.game.play_field_rect.x:
+    #             test_blocks = []
+    #             self.test_posture = 0
+    #             return True
+    #         else:
+    #             self.test_posture = 0
+    #             return False
+        

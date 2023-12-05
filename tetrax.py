@@ -5,7 +5,6 @@ from random import choice
 from tile import Tile, Block
 
 
-
 class Game:
     def __init__(self):
         pygame.init()
@@ -31,7 +30,6 @@ class Game:
         self.tile_posture = 0
 
         self.moving_blocks = []
-        # self.moving_rects = []
         self.static_blocks = []
 
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
@@ -48,15 +46,16 @@ class Game:
                 self.tile_posture = 0
                 self.tile = Tile(self, self.x, self.y, self.next_tile)
                 self.tile.create_tile_blocks()
-
-            self.check_events()
-            # self.check_bottom()
             
-            self.tile_step()
+            self.check_events()
+
+            # self.tile_step()
+            # self.tile.update()
             self.check_borders(self.play_field_rect)
-            self.tile.update()
-            # self.check_collision()
+            self.check_collision()
             self.check_bottom()
+            self.tile_step()
+            self.tile.update()
             
             self.update_screen()
             self.clock.tick(self.fps)
@@ -101,7 +100,23 @@ class Game:
                 self.x = 160
                 self.y = 0
                 return
-    
+            
+    def check_collision(self):
+        for block in self.moving_blocks:
+            test_x = block.rect.x
+            test_y = block.rect.y + 40
+            testrect = pygame.Rect(test_x, test_y, 40, 40)
+
+            if testrect in self.static_blocks:
+                self.tile.moving = False
+                for j in self.moving_blocks:
+                    self.static_blocks.append(j)
+                self.moving_blocks = [] 
+                self.x = 160
+                self.y = 0
+                testrect = ""
+                return
+            
     def tile_step(self):
         if self.tile.moving:  
             self.counter += 1
