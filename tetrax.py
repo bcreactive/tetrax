@@ -213,10 +213,10 @@ class Game:
                 # testposture = 0
                 return False
 
-        for i in self.static_blocks:
-            for j in testrects:
-                if i.rect.colliderect(j):
-                    return False  
+        # for i in self.static_blocks:
+        #     for j in testrects:
+        #         if i.rect.colliderect(j):
+        #             return False  
         return True
             
     def check_left_turn(self):
@@ -245,10 +245,10 @@ class Game:
                 # testposture = 0
                 return False
 
-        for i in self.static_blocks:
-            for j in testrects:
-                if i.rect.colliderect(j):
-                    return False    
+        # for i in self.static_blocks:
+        #     for j in testrects:
+        #         if i.rect.colliderect(j):
+        #             return False    
         return True 
             
     def turn_right(self):
