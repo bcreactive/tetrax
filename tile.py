@@ -21,11 +21,13 @@ class Tile:
         self.leftmove_possible = True
         self.moving_right = False
         self.moving_left = False
+        self.fast_drop = False
         self.moving = True
     
     def get_tile_position(self, tile):
         if tile == "L":
-            positions = [[(0, 0),
+            positions = [
+                        [(0, 0),
                         (0, 40),
                         (0, 80),
                         (40, 80)],
@@ -48,7 +50,8 @@ class Tile:
             return positions
             
         elif tile == "Rev_L":
-            positions = [[(0, 0),
+            positions = [[
+                        (0, 0),
                         (0, 40),
                         (0, 80),
                         (-40, 80)],
@@ -71,7 +74,8 @@ class Tile:
             return positions
         
         elif tile == "Bloc":
-            positions = [[(0, 0),
+            positions = [[
+                        (0, 0),
                         (40, 0),
                         (0, 40),
                         (40, 40)]
@@ -79,7 +83,8 @@ class Tile:
             return positions
             
         elif tile == "Z":
-            positions = [[(-40, 0),
+            positions = [[
+                        (-40, 0),
                         (0, 0),
                         (0, 40),
                         (40, 40)],
@@ -92,7 +97,8 @@ class Tile:
             return positions
             
         elif tile == "Rev_Z":
-            positions = [[(0, 0),
+            positions = [
+                        [(0, 0),
                         (40, 0),
                         (-40, 40),
                         (0, 40)],
@@ -105,7 +111,8 @@ class Tile:
             return positions
             
         elif tile == "Tri":
-            positions = [[(0, 0),
+            positions = [
+                        [(0, 0),
                         (0, 40),
                         (40, 40),
                         (0, 80)],
@@ -128,7 +135,8 @@ class Tile:
             return positions
 
         elif tile == "Bar":
-            positions = [[(-40, 0),
+            positions = [
+                        [(-40, 0),
                         (-40, 40),
                         (-40, 80),
                         (-40, 120)],

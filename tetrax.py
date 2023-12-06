@@ -34,7 +34,9 @@ class Game:
         self.moving_blocks = []
         self.static_blocks = []
 
+        # self.tile_pool = ["Rev_Z"]
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
+
         self.next_tile = self.get_next_tile()
 
         self.tile = Tile(self, self.x, self.y, self.next_tile)
@@ -52,7 +54,7 @@ class Game:
             self.check_events()
 
             self.check_borders(self.play_field_rect)
-            self.check_collision()
+            self.check_drop_collision()
             self.check_bottom()
             self.tile_step()
             self.tile.update()
@@ -92,6 +94,7 @@ class Game:
 
                 if event.key == pygame.K_n:
                     self.turn_left()
+                
 
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
@@ -108,7 +111,7 @@ class Game:
                 self.y = 0
                 return
             
-    def check_collision(self):
+    def check_drop_collision(self):
         for block in self.moving_blocks:
             test_x = block.rect.x
             test_y = block.rect.y + 40
@@ -164,23 +167,21 @@ class Game:
             if self.tile_posture == 1:
                 testposture = 0
                 
-        print(self.tile_posture)
-        print(testposture)
-        print("\n")
-
         for i in self.tile.tile_positions[testposture]:
             testrect = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
             testrects.append(testrect)
         
-        for i in testrects:
+        for i in testrects:          
             if (i.left < self.play_field_rect.left or
                 i.right > self.play_field_rect.right):
-                testposture = 0
-                # testrects = []
+                # testposture = 0
                 return False
-            else:
-                # testrects = []
-                return True
+
+        for i in self.static_blocks:
+            for j in testrects:
+                if i.rect.colliderect(j):
+                    return False  
+        return True
             
     def check_left_turn(self):
         testrects = []
@@ -197,10 +198,6 @@ class Game:
                 testposture = self.tile_posture - 1 
             if self.tile_posture == 0:
                 testposture = 1
-        
-        print(self.tile_posture)
-        print(testposture)
-        print("\n")
 
         for i in self.tile.tile_positions[testposture]:
             testrect = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
@@ -209,12 +206,14 @@ class Game:
         for i in testrects:
             if (i.left < self.play_field_rect.left or
                 i.right > self.play_field_rect.right):
-                testposture = 0
-                # testrects = []
+                # testposture = 0
                 return False
-            else:
-                # testrects = []
-                return True 
+
+        for i in self.static_blocks:
+            for j in testrects:
+                if i.rect.colliderect(j):
+                    return False    
+        return True 
             
     def turn_right(self):
         right_turn_possible = self.check_right_turn()
