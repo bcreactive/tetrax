@@ -3,6 +3,7 @@ import sys
 from random import choice
 
 from tile import Tile, Block
+from score_field import Scorefield
 
 
 class Game:
@@ -12,7 +13,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.fps = 60
 
-        self.screen = pygame.display.set_mode((520, 720))
+        self.screen = pygame.display.set_mode((560, 720))
         self.screen_rect = self.screen.get_rect()
         pygame.display.set_caption("Tetrax")
         self.bg_color = (0, 0, 0)
@@ -46,6 +47,8 @@ class Game:
 
         self.tile = Tile(self, self.x, self.y, self.next_tile)
         self.tile.create_tile_blocks()
+
+        self.scorefield = Scorefield(self)
 
     def run_game(self):     
         while True:
@@ -378,6 +381,7 @@ class Game:
     def update_screen(self):
         self.screen.fill(self.bg_color)
         self.screen.blit(self.play_field, (0, 0))
+        self.scorefield.drawme()
         for block in self.moving_blocks:      
             pygame.draw.rect(self.screen, block.color, block)
             pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
