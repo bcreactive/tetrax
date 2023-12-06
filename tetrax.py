@@ -56,11 +56,8 @@ class Game:
             
                 if not self.moving_blocks:
                     if not self.game_over:
-                        self.next_tile = self.get_next_tile()
-                        self.tile_posture = 0
-                        self.tile = Tile(self, self.x, self.y, self.next_tile)
-                        self.tile.create_tile_blocks()
-                
+                        self.create_new_tile()
+              
                 self.check_events()
 
                 self.check_max_heigth()
@@ -70,8 +67,9 @@ class Game:
                 self.tile_step()
                 self.tile.update()
                 self.check_full_lines()
+
                 # self.check_level_up()
-                # self.scorefield.prep_level(self.level)
+                self.scorefield.prep_lines()
                 
             self.update_screen()
             self.clock.tick(self.fps)
@@ -105,6 +103,12 @@ class Game:
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
         return next_tile
+
+    def create_new_tile(self):
+        self.next_tile = self.get_next_tile()
+        self.tile_posture = 0
+        self.tile = Tile(self, self.x, self.y, self.next_tile)
+        self.tile.create_tile_blocks()
 
     def check_bottom(self):
         for i in self.moving_blocks:
