@@ -29,8 +29,6 @@ class Game:
         self.y = 0
         self.tile_posture = 0
 
-        # self.check_full_lines()
-
         self.moving_blocks = []
         self.static_blocks = []
 
@@ -58,7 +56,7 @@ class Game:
             self.check_bottom()
             self.tile_step()
             self.tile.update()
-            # self.check_full_lines()
+            self.check_full_lines()
             
             self.update_screen()
             self.clock.tick(self.fps)
@@ -128,7 +126,6 @@ class Game:
                 for i in self.moving_blocks:  
                     i.rect.y += 40
                 self.counter = 0
-                self.check_full_lines()
             
     def check_borders(self, field_rect):
         for block in self.moving_blocks:
@@ -287,12 +284,19 @@ class Game:
 
     def remove_line(self, rects):
         remove_rects = rects
+        y = remove_rects[0].y
 
         for i in remove_rects:
             for j in self.static_blocks:
                 if i == j.rect:
                     self.static_blocks.remove(j)
+        self.drop_restblocks(y)
         print("line removed!")
+
+    def drop_restblocks(self, y):
+        for i in self.static_blocks:
+            if i.rect.y < y:
+                i.rect.y += 40
 
 
     def check_full_lines(self):
@@ -314,30 +318,6 @@ class Game:
                 x -= 1
                 continue
             
-                # counter += 1
-                    # testline.append(i)
-                    # continue
-        # print(testline)
-            # exit()
-        # print(static_rects)
-        # print(all_rects[0])
-        # print("\n")
-        # x = 17
-        # if x >= 0:
-        #     for i in static_rects:
-        #         for j in all_rects[x]:
-        #             if i in j:
-        #                 testline.append(i)
-        #         x -= 1
-        # elif x == 0:
-        #     x = 17
-        # print(testline)
-        #     if len(testline) == 10:
-        #         print("line full!")
-
-        # print(testline)
-        # exit()
-
     def create_all_rects(self):
         testrects = []
         linerects = []
