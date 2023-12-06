@@ -35,6 +35,8 @@ class Game:
         # self.tile_pool = ["Bloc"]
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
 
+        self.game_over = False
+
         self.next_tile = self.get_next_tile()
 
         self.tile = Tile(self, self.x, self.y, self.next_tile)
@@ -43,14 +45,17 @@ class Game:
     def run_game(self):     
         while True:
             # if self.game_active:  
+            
             if not self.moving_blocks:
-                self.next_tile = self.get_next_tile()
-                self.tile_posture = 0
-                self.tile = Tile(self, self.x, self.y, self.next_tile)
-                self.tile.create_tile_blocks()
+                if not self.game_over:
+                    self.next_tile = self.get_next_tile()
+                    self.tile_posture = 0
+                    self.tile = Tile(self, self.x, self.y, self.next_tile)
+                    self.tile.create_tile_blocks()
             
             self.check_events()
 
+            self.check_max_heigth()
             self.check_borders(self.play_field_rect)
             self.check_drop_collision()
             self.check_bottom()
@@ -101,7 +106,15 @@ class Game:
                 self.x = 160
                 self.y = 0
                 return
-            
+
+    def check_max_heigth(self):
+        for block in self.static_blocks:
+            if block.rect.y <= 0:
+                print("game over!")
+                self.game_over = True
+                exit()
+
+
     def check_drop_collision(self):
         for block in self.moving_blocks:
             test_x = block.rect.x
@@ -291,13 +304,11 @@ class Game:
                 if i == j.rect:
                     self.static_blocks.remove(j)
         self.drop_restblocks(y)
-        print("line removed!")
 
     def drop_restblocks(self, y):
         for i in self.static_blocks:
             if i.rect.y < y:
                 i.rect.y += 40
-
 
     def check_full_lines(self):
         all_rects = self.create_all_rects()
