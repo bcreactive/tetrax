@@ -1,65 +1,113 @@
 import pygame
 
+from tile import Block
+
 
 class Scorefield:
     def __init__(self, game):
         self.game = game
 
-        self.color = (101, 50, 200)
+        # Font and color settings.
+        self.color = (141, 90, 120)
         self.frame_color = (0, 0, 0)
-        self.WIDHT =  160
-        self.X_POSITION = 400
+
+        self.text_label_color = (10, 100, 100)
+        self.text_color = (0, 0, 0)
+
+        self.font = pygame.font.SysFont(None, 32)
+
+        self.load_positions()
+        self.create_rects()
+
+        self.prep_next()
+        self.prep_level()
+        self.prep_lines()
+
+    def load_positions(self):
+        # Position, Surfaces, Rects.
+        self.width =  120
+        self.x_position = 400
 
         self.next_y = 0
         self.next_heigth = 240
+        self.next_img = pygame.Surface((1, 1))
+        self.next_rect = pygame.Rect(0, 0, 0, 0)
 
         self.level_y = 240
         self.level_heigth = 160
-
+        self.level_img = pygame.Surface((1, 1))
+        self.level_rect = pygame.Rect(0, 0, 0, 0)
+        
         self.lines_y = 400
         self.lines_heigth = 160
+        self.lines_img = pygame.Surface((1, 1))
+        self.lines_rect = pygame.Rect(0, 0, 0, 0)
 
         self.empty_y = 560
         self.empty_heigth = 160
 
-        self.create_rects()
-
     def create_rects(self):
-        self.next_rect = pygame.Rect(self.X_POSITION, self.next_y,
-                                        self.WIDHT, self.next_heigth)
+        self.next_srfc_rect = pygame.Rect(self.x_position, self.next_y,
+                                        self.width, self.next_heigth)
         
-        self.level_rect = pygame.Rect(self.X_POSITION, self.level_y,
-                                        self.WIDHT, self.level_heigth)
+        self.level_srfc_rect = pygame.Rect(self.x_position, self.level_y,
+                                        self.width, self.level_heigth)
         
-        self.lines_rect = pygame.Rect(self.X_POSITION, self.lines_y,
-                                        self.WIDHT, self.lines_heigth)
+        self.lines_srfc_rect = pygame.Rect(self.x_position, self.lines_y,
+                                        self.width, self.lines_heigth)
         
-        self.empty_rect = pygame.Rect(self.X_POSITION, self.empty_y,
-                                        self.WIDHT, self.empty_heigth)
-        
-        # self.next_surface = pygame.Surface(self.X_POSITION, self.next_y)
-        # self.next_surface.fill(10, 50, 200)
-        # self.level_surface = pygame.Surface(self.X_POSITION, self.level_y)
-        # self.next_surface.fill(10, 50, 200)
-        # self.lines_surface = pygame.Surface(self.X_POSITION, self.lines_y)
-        # self.next_surface.fill(10, 50, 200)
-        # self.empty_surface = pygame.Surface(self.X_POSITION, self.empty_y)
-        # self.next_surface.fill(10, 50, 200)
-    
+        self.empty_srfc_rect = pygame.Rect(self.x_position, self.empty_y,
+                                        self.width, self.empty_heigth)
+
+    def prep_next(self):
+        # Get a rendered image with the level.
+        next_str = "Next:"
+        self.next_img = self.font.render(next_str, True, self.text_color,
+                                            self.color)   
+           
+        self.next_rect = self.next_img.get_rect()
+        self.next_rect.center = self.next_srfc_rect.center
+        self.next_rect.top = self.next_srfc_rect.y + 20
+
+    def prep_level(self):
+        # Get a rendered image with the level.
+        level_str = "Level:"
+        self.level_img = self.font.render(level_str, True, self.text_color,
+                                            self.color)   
+           
+        self.level_rect = self.level_img.get_rect()
+        self.level_rect.center = self.level_srfc_rect.center
+        self.level_rect.top = self.level_srfc_rect.y + 20
+
+    def prep_lines(self):
+        # Get a rendered image with the destroyed lines.
+        lines_str = "Lines:"
+        self.lines_img = self.font.render(lines_str, True, self.text_color,
+                                            self.color)   
+           
+        self.lines_rect = self.lines_img.get_rect()
+        self.lines_rect.center = self.lines_srfc_rect.center
+        self.lines_rect.top = self.lines_srfc_rect.y + 20
+
     def drawme(self):
-        pygame.draw.rect(self.game.screen, self.color, self.next_rect)
+        pygame.draw.rect(self.game.screen, self.color, self.next_srfc_rect)
         pygame.draw.rect(self.game.screen, self.frame_color,
-                         self.next_rect, width=4)
+                         self.next_srfc_rect, width=4)
+        self.game.screen.blit(self.next_img, self.next_rect)
         
-        pygame.draw.rect(self.game.screen, self.color, self.level_rect)
+        pygame.draw.rect(self.game.screen, self.color, self.level_srfc_rect)
         pygame.draw.rect(self.game.screen, self.frame_color,
-                         self.level_rect, width=4)
+                         self.level_srfc_rect, width=4)
+        self.game.screen.blit(self.level_img, self.level_rect)
         
-        pygame.draw.rect(self.game.screen, self.color, self.lines_rect)
+        pygame.draw.rect(self.game.screen, self.color, self.lines_srfc_rect)
         pygame.draw.rect(self.game.screen, self.frame_color,
-                         self.lines_rect, width=4)
+                         self.lines_srfc_rect, width=4)
+        self.game.screen.blit(self.lines_img, self.lines_rect)
         
-        pygame.draw.rect(self.game.screen, self.color, self.empty_rect)
+        pygame.draw.rect(self.game.screen, self.color, self.empty_srfc_rect)
         pygame.draw.rect(self.game.screen, self.frame_color,
-                         self.empty_rect, width=4)
+                         self.empty_srfc_rect, width=4)
+        
+
 

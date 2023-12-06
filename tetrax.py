@@ -13,7 +13,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.fps = 60
 
-        self.screen = pygame.display.set_mode((560, 720))
+        self.screen = pygame.display.set_mode((520, 720))
         self.screen_rect = self.screen.get_rect()
         pygame.display.set_caption("Tetrax")
         self.bg_color = (0, 0, 0)
@@ -71,6 +71,7 @@ class Game:
                 self.tile.update()
                 self.check_full_lines()
                 # self.check_level_up()
+                # self.scorefield.prep_level(self.level)
                 
             self.update_screen()
             self.clock.tick(self.fps)
