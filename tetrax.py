@@ -34,7 +34,7 @@ class Game:
         self.moving_blocks = []
         self.static_blocks = []
 
-        # self.tile_pool = ["Rev_Z"]
+        # self.tile_pool = ["Bloc"]
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
 
         self.next_tile = self.get_next_tile()
@@ -127,7 +127,8 @@ class Game:
                 self.y += 40
                 for i in self.moving_blocks:  
                     i.rect.y += 40
-                    self.counter = 0
+                self.counter = 0
+                self.check_full_lines()
             
     def check_borders(self, field_rect):
         for block in self.moving_blocks:
@@ -284,31 +285,82 @@ class Game:
     def check_side_move(self):
         pass
 
+    def remove_line(self, rects):
+        remove_rects = rects
+
+        for i in remove_rects:
+            for j in self.static_blocks:
+                if i == j.rect:
+                    self.static_blocks.remove(j)
+        print("line removed!")
+
+
     def check_full_lines(self):
-        # testrects = self.create_testrects()
-        # index = 0
-        # for i in testrects[index]:
-        #     if i == self.static_blocks[i].rect:
-                pass
-        
-    # def create_testrects(self):
-    #     testrects = []
-    #     linerects = []
-    #     x = 0
-    #     y = 0
+        all_rects = self.create_all_rects()
+        static_rects = self.create_static_rects()
+        x = 17
+        for i in range(17):
+            testline = []
+            for i in all_rects[x]:
+                if i in static_rects and not i in testline:
+                    testline.append(i)
 
-    #     for i in range(18):
-    #         for i in range(10):
-    #             testrect = pygame.Rect(x, y, 40, 40)
-    #             linerects.append(testrect)
-    #             x += 40
-    #         testrects.append(linerects)
-    #         linerects = []
-    #         x = 0
-    #         y += 40
+            if len(testline) < 10:
+                x -= 1
+                continue
 
-    #     return testrects
+            if len(testline) == 10:
+                self.remove_line(testline)
+                x -= 1
+                continue
+            
+                # counter += 1
+                    # testline.append(i)
+                    # continue
+        # print(testline)
+            # exit()
+        # print(static_rects)
+        # print(all_rects[0])
+        # print("\n")
+        # x = 17
+        # if x >= 0:
+        #     for i in static_rects:
+        #         for j in all_rects[x]:
+        #             if i in j:
+        #                 testline.append(i)
+        #         x -= 1
+        # elif x == 0:
+        #     x = 17
+        # print(testline)
+        #     if len(testline) == 10:
+        #         print("line full!")
 
+        # print(testline)
+        # exit()
+
+    def create_all_rects(self):
+        testrects = []
+        linerects = []
+        x = 0
+        y = 0
+
+        for i in range(18):
+            for i in range(10):
+                testrect = pygame.Rect(x, y, 40, 40)
+                linerects.append(testrect)
+                x += 40
+            testrects.append(linerects)
+            linerects = []
+            x = 0
+            y += 40
+
+        return testrects
+
+    def create_static_rects(self):
+        rects = []
+        for i in self.static_blocks:
+            rects.append(i.rect)
+        return rects
        
     def update_screen(self):
         self.screen.fill(self.bg_color)

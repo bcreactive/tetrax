@@ -149,8 +149,8 @@ class Tile:
             return positions
 
     def create_tile_blocks(self):
-        self.game.x = 160
-        self.game.y = 0
+        self.x = 160
+        self.y = 0
 
         for i in self.tile_positions[0]:
             block = Block(self.x + i[0], self.y + i[1], self.tile)
