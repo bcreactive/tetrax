@@ -35,7 +35,12 @@ class Game:
         # self.tile_pool = ["Bloc"]
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
 
+        self.line_counter = 0
+        self.level = 1
+
+        self.game_active = True
         self.game_over = False
+        self.level_up = False
 
         self.next_tile = self.get_next_tile()
 
@@ -44,25 +49,26 @@ class Game:
 
     def run_game(self):     
         while True:
-            # if self.game_active:  
+            if self.game_active:  
             
-            if not self.moving_blocks:
-                if not self.game_over:
-                    self.next_tile = self.get_next_tile()
-                    self.tile_posture = 0
-                    self.tile = Tile(self, self.x, self.y, self.next_tile)
-                    self.tile.create_tile_blocks()
-            
-            self.check_events()
+                if not self.moving_blocks:
+                    if not self.game_over:
+                        self.next_tile = self.get_next_tile()
+                        self.tile_posture = 0
+                        self.tile = Tile(self, self.x, self.y, self.next_tile)
+                        self.tile.create_tile_blocks()
+                
+                self.check_events()
 
-            self.check_max_heigth()
-            self.check_borders(self.play_field_rect)
-            self.check_drop_collision()
-            self.check_bottom()
-            self.tile_step()
-            self.tile.update()
-            self.check_full_lines()
-            
+                self.check_max_heigth()
+                self.check_borders(self.play_field_rect)
+                self.check_drop_collision()
+                self.check_bottom()
+                self.tile_step()
+                self.tile.update()
+                self.check_full_lines()
+                # self.check_level_up()
+                
             self.update_screen()
             self.clock.tick(self.fps)
 
@@ -112,8 +118,8 @@ class Game:
             if block.rect.y <= 0:
                 print("game over!")
                 self.game_over = True
-                exit()
-
+                self.game_active = False
+                # exit()
 
     def check_drop_collision(self):
         for block in self.moving_blocks:
@@ -295,6 +301,19 @@ class Game:
     def check_side_move(self):
         pass
 
+    # def raise_level(self):
+    #     if self.level_up:
+    #         print("level up!")
+    #         self.level += 1
+    #         self.drop_speed -= 10
+    #         print(self.level)
+    #         self.level_up = False
+
+    # def check_level_up(self):
+    #     if self.line_counter %2 == 0:
+    #         self.level_up = True
+    #         self.raise_level()
+
     def remove_line(self, rects):
         remove_rects = rects
         y = remove_rects[0].y
@@ -303,7 +322,10 @@ class Game:
             for j in self.static_blocks:
                 if i == j.rect:
                     self.static_blocks.remove(j)
+        self.line_counter += 1
+        # self.points += self.level * 100
         self.drop_restblocks(y)
+        # self.check_level_up()
 
     def drop_restblocks(self, y):
         for i in self.static_blocks:
@@ -358,10 +380,10 @@ class Game:
         self.screen.blit(self.play_field, (0, 0))
         for block in self.moving_blocks:      
             pygame.draw.rect(self.screen, block.color, block)
-            pygame.draw.rect(self.screen, (0, 0, 0), block, width=3)
+            pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
         for block in self.static_blocks:
             pygame.draw.rect(self.screen, block.color, block)
-            pygame.draw.rect(self.screen, (0, 0, 0), block, width=3)
+            pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
         pygame.display.flip()
 
 pygame.quit()
