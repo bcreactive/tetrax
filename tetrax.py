@@ -69,7 +69,7 @@ class Game:
                 self.check_full_lines()
 
                 # self.check_level_up()
-                self.scorefield.prep_lines()
+                self.scorefield.update()
                 
             self.update_screen()
             self.clock.tick(self.fps)
@@ -309,18 +309,11 @@ class Game:
     def check_side_move(self):
         pass
 
-    # def raise_level(self):
-    #     if self.level_up:
-    #         print("level up!")
-    #         self.level += 1
-    #         self.drop_speed -= 10
-    #         print(self.level)
-    #         self.level_up = False
-
-    # def check_level_up(self):
-    #     if self.line_counter %2 == 0:
-    #         self.level_up = True
-    #         self.raise_level()
+    def raise_level(self):
+        # play level up sound
+        print("level up!")
+        self.level += 1
+        self.drop_speed -= 10
 
     def remove_line(self, rects):
         remove_rects = rects
@@ -331,9 +324,10 @@ class Game:
                 if i == j.rect:
                     self.static_blocks.remove(j)
         self.line_counter += 1
+        if self.line_counter % 3 == 0:
+            self.raise_level()
         # self.points += self.level * 100
         self.drop_restblocks(y)
-        # self.check_level_up()
 
     def drop_restblocks(self, y):
         for i in self.static_blocks:
