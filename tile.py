@@ -15,10 +15,10 @@ class Tile:
         
         self.tile_positions = self.get_tile_position(self.tile)
 
-        self.rightturn_possible = True
-        self.leftturn_possible = True
-        self.rightmove_possible = True
-        self.leftmove_possible = True
+        # self.rightturn_possible = True
+        # self.leftturn_possible = True
+        # self.rightmove_possible = True
+        # self.leftmove_possible = True
         self.moving_right = False
         self.moving_left = False
         self.fast_drop = False

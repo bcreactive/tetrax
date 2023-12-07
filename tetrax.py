@@ -33,8 +33,8 @@ class Game:
         self.moving_blocks = []
         self.static_blocks = []
 
-        # self.tile_pool = ["Bloc"]
-        self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
+        self.tile_pool = ["Bar"]
+        # self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
 
         self.line_counter = 0
         self.level = 1
@@ -42,6 +42,11 @@ class Game:
         self.game_active = True
         self.game_over = False
         self.level_up = False
+
+        self.rightmove_possible = True
+        self.leftmove_possible = True
+        self.rightturn_possible = True
+        self.leftturn_possible = True
 
         self.next_tile = self.get_next_tile()
 
@@ -62,6 +67,7 @@ class Game:
 
                 self.check_max_heigth()
                 self.check_borders(self.play_field_rect)
+                # self.check_tile_sides()
                 self.check_drop_collision()
                 self.check_bottom()
                 self.tile_step()
@@ -81,11 +87,11 @@ class Game:
             # if self.game_active:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    if self.tile.rightmove_possible and self.tile.moving:
+                    if self.rightmove_possible and self.tile.moving:
                         self.move_right()
                            
                 if event.key == pygame.K_LEFT:
-                    if self.tile.leftmove_possible and self.tile.moving:
+                    if self.leftmove_possible and self.tile.moving:
                         self.move_left()
                 
                 if event.key == pygame.K_DOWN:
@@ -155,52 +161,68 @@ class Game:
                 self.counter = 0
             
     def check_borders(self, field_rect):
+        # rightmove_possible = self.check_right_move()
+        
+        # if not rightmove_possible:
+        #     self.rightmove_possible = False
+        # print(self.rightmove_possible)
+        # leftmove_possible = self.check_left_move()
+        # if not leftmove_possible:
+        #     self.leftmove_possible = False
+
         for block in self.moving_blocks:
             if block.rect.left <= field_rect.left:
-                self.tile.leftmove_possible = False  
+                self.leftmove_possible = False  
                 return
             
             if block.rect.right >= field_rect.right:
-                self.tile.rightmove_possible = False  
+                self.rightmove_possible = False  
                 return  
                        
             if (block.rect.left >= field_rect.left or
                 block.rect.right <= field_rect.right):
-                self.tile.rightmove_possible = True
-                self.tile.leftmove_possible = True
+                self.rightmove_possible = True
+                self.leftmove_possible = True
 
-    # def check_right_move(self):
-    #     testrects = []
-    #     for i in self.moving_blocks:
-    #         testrects.append(i.rect)
+    def check_tile_sides(self):
+        self.check_right_move()  
+        # if self.rightmove_possible: 
+        #     print("rightmove_possible")     
+        self.check_left_move()
+        # if self.leftmove_possible:
+        #     print("leftmove_possible")
 
-    #     for i in testrects:
-    #         i.x += 40
+    def check_right_move(self):
+        testblocks = []
         
-    #     for i in testrects:
-    #         if i in self.static_blocks:
-    #     # for i in self.static_blocks:  
-    #     #     for j in testrects:        
-    #     #         if i.colliderect(j):
-    #                 # self.tile.rightmove_possible = False
-    #                 print(False)
-    #                 return False
-    #     print(True) 
-    #     # self.tile.rightmove_possible = True  
-    #     return True
+        for i in self.moving_blocks:
+            testblock = Block(i.rect.x + 40, i.rect.y, self.tile)
+            testblocks.append(testblock)
 
-    # def check_left_move(self):
-    #     pass
-        # testrects = []
-        # for i in self.tile.tile_positions[self.tile_posture]:
-        #     testrect = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
-        #     testrects.append(testrect)
+        for i in testblocks:
+            for j in self.static_blocks:
+                if i.rect.right < j.rect.left and i.rect.bottom <= j.rect.top:
+                    self.rightmove_possible = True
+                if i.rect.right > j.rect.left and i.rect.bottom > j.rect.top:
+                    # if i.rect.left <= j.rect.left and i.rect.bottom > j.rect.top:
+                        self.rightmove_possible = False
+                    # return 
+
+    def check_left_move(self):
+        testblocks = []
         
-        # for i in testrects:  
-        #     for j in self.static_blocks:        
-        #         if i.colliderect(j):
-        #             self.tile.rightmove_possible = False
-        #             return
+        for i in self.moving_blocks:
+            testblock = Block(i.rect.x - 40, i.rect.y, self.tile)
+            testblocks.append(testblock)
+
+        for i in testblocks:
+            for j in self.static_blocks:
+                if i.rect.left < j.rect.right and i.rect.bottom <= j.rect.top:
+                    self.leftmove_possible = True
+                if i.rect.left < j.rect.right and i.rect.bottom > j.rect.top:
+                    # if i.rect.right >= j.rect.right and i.rect.bottom > j.rect.top:
+                        self.leftmove_possible = False
+                    # return 
 
     def move_right(self):
         self.x += 40
@@ -324,7 +346,7 @@ class Game:
                 if i == j.rect:
                     self.static_blocks.remove(j)
         self.line_counter += 1
-        if self.line_counter % 3 == 0:
+        if self.line_counter % 10 == 0:
             self.raise_level()
         # self.points += self.level * 100
         self.drop_restblocks(y)
