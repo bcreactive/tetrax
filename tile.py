@@ -18,6 +18,7 @@ class Tile:
 
         self.moving_right = False
         self.moving_left = False
+        self.fast_drop_possible = True
         self.fast_drop = False
         self.moving = True
     
@@ -167,9 +168,27 @@ class Tile:
                                   self.tile)
                     self.game.moving_blocks.append(block)
 
-    def update(self):       
+    def check_fast_drop(self):    
+        if self.fast_drop_possible and self.fast_drop and self.moving:
+            for i in self.game.moving_blocks:
+                i.rect.y += 40
+
+    # def correct_grid_pos(self):
+    #     # self.game.counter = 0
+    #     if self.game.y % self.side_len != 0:
+    #         diff = self.game.y % self.side_len
+    #         # self.game.y += diff
+    #         for i in self.game.moving_blocks:
+    #             i.rect.y += diff
+    #     self.game.counter = 0
+    #     self.game.step_active = True
+
+    def update(self): 
         self.x = self.game.x
-        self.y = self.game.y
+        self.y = self.game.y    
+        self.check_fast_drop()
+        self.x = self.game.x
+        self.y = self.game.y    
         self.update_tile_blocks()
 
 
