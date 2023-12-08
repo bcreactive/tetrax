@@ -163,6 +163,8 @@ class Tile:
 
             if self.moving:
                 self.game.moving_blocks = []
+                # self.x = self.game.x
+                # self.y = self.game.y   
                 for i in self.tile_positions[self.posture]:
                     block = Block(self.x + i[0], self.y + i[1], self.side_len,
                                   self.tile)
@@ -184,8 +186,8 @@ class Tile:
     #     self.game.step_active = True
 
     def update(self): 
-        self.x = self.game.x
-        self.y = self.game.y    
+        # self.x = self.game.x
+        # self.y = self.game.y    
         self.check_fast_drop()
         self.x = self.game.x
         self.y = self.game.y    
