@@ -7,6 +7,7 @@ class Tile:
         self.x = x
         self.y = y
         self.tile = tile
+        self.side_len = 40
 
         self.drop_speed = game.drop_speed
         self.counter = 0
@@ -15,10 +16,6 @@ class Tile:
         
         self.tile_positions = self.get_tile_position(self.tile)
 
-        # self.rightturn_possible = True
-        # self.leftturn_possible = True
-        # self.rightmove_possible = True
-        # self.leftmove_possible = True
         self.moving_right = False
         self.moving_left = False
         self.fast_drop = False
@@ -153,7 +150,8 @@ class Tile:
         self.y = 0
 
         for i in self.tile_positions[0]:
-            block = Block(self.x + i[0], self.y + i[1], self.tile)
+            block = Block(self.x + i[0], self.y + i[1], self.side_len,
+                          self.tile)
             self.game.moving_blocks.append(block)
             self.game.tile_posture = 0
         self.moving = True
@@ -165,7 +163,8 @@ class Tile:
             if self.moving:
                 self.game.moving_blocks = []
                 for i in self.tile_positions[self.posture]:
-                    block = Block(self.x + i[0], self.y + i[1], self.tile)
+                    block = Block(self.x + i[0], self.y + i[1], self.side_len,
+                                  self.tile)
                     self.game.moving_blocks.append(block)
 
     def update(self):       
@@ -175,9 +174,9 @@ class Tile:
 
 
 class Block:
-    def __init__(self, x, y, tile):
+    def __init__(self, x, y, side, tile):
         self.color = self.get_color(tile)
-        self.rect = pygame.Rect((x, y, 40, 40))
+        self.rect = pygame.Rect((x, y, side, side))
 
     def get_color(self, tile):
         if tile == "L":

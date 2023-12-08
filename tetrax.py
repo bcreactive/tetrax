@@ -115,6 +115,8 @@ class Game:
         self.tile_posture = 0
         self.tile = Tile(self, self.x, self.y, self.next_tile)
         self.tile.create_tile_blocks()
+        self.rightmove_possible = True
+        self.leftmove_possible = True
 
     def check_bottom(self):
         for i in self.moving_blocks:
@@ -133,6 +135,7 @@ class Game:
                 print("game over!")
                 self.game_over = True
                 self.game_active = False
+                return
                 # exit()
 
     def check_drop_collision(self):
@@ -182,7 +185,8 @@ class Game:
     def check_right_move(self):
         testblocks = []  
         for i in self.moving_blocks:
-            testblock = Block(i.rect.x + 40, i.rect.y, self.tile)
+            testblock = Block(i.rect.x + 40, i.rect.y, self.tile.side_len, 
+                              self.tile)
             testblocks.append(testblock)
    
         for i in testblocks:
@@ -190,13 +194,13 @@ class Game:
                 collision = pygame.Rect.colliderect(i.rect, j.rect)
                 if collision:
                     self.rightmove_possible = False
-                    print("right blocked!")
                     return
 
     def check_left_move(self):
         testblocks = []       
         for i in self.moving_blocks:
-            testblock = Block(i.rect.x - 40, i.rect.y, self.tile)
+            testblock = Block(i.rect.x - 40, i.rect.y, self.tile.side_len, 
+                               self.tile)
             testblocks.append(testblock)
 
         for i in testblocks:
@@ -204,7 +208,6 @@ class Game:
                 collision = pygame.Rect.colliderect(i.rect, j.rect)
                 if collision:
                     self.leftmove_possible = False
-                    print("left blocked!")
                     return
                 
     def move_right(self):
@@ -219,8 +222,10 @@ class Game:
 
     def check_right_turn(self):
         testrects = []
+        testblocks = []
         testposture = 0
         
+        # Create the posture to get position for test-tile.
         if len(self.tile.tile_positions) == 4:     
             if not self.tile_posture == 3:
                 testposture = self.tile_posture + 1 
@@ -232,27 +237,38 @@ class Game:
                 testposture = self.tile_posture + 1 
             if self.tile_posture == 1:
                 testposture = 0
-                
+
+        # Create Rect objects with origin side length.        
         for i in self.tile.tile_positions[testposture]:
             testrect = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
             testrects.append(testrect)
         
+        # Testing play-field borders.
         for i in testrects:          
             if (i.left < self.play_field_rect.left or
                 i.right > self.play_field_rect.right):
-                # testposture = 0
                 return False
-
-        # for i in self.static_blocks:
-        #     for j in testrects:
-        #         if i.rect.colliderect(j):
-        #             return False  
+            
+        # Create Rect objects with smaller side length.
+        for i in self.tile.tile_positions[testposture]:
+            testblock = pygame.Rect(self.x + i[0]+1, self.y + i[1]+1, 38, 38)
+            testblocks.append(testblock)
+        
+        # Checking for collision with other tiles when turning right.
+        for i in testblocks:
+            for j in self.static_blocks:
+                collision = pygame.Rect.colliderect(i, j.rect)
+                if collision:
+                    return False
+                
         return True
             
     def check_left_turn(self):
         testrects = []
+        testblocks = []
         testposture = 0
 
+        # Create the posture to get position for test-tile.
         if len(self.tile.tile_positions) == 4:     
             if not self.tile_posture == 0:
                 testposture = self.tile_posture - 1 
@@ -264,21 +280,30 @@ class Game:
                 testposture = self.tile_posture - 1 
             if self.tile_posture == 0:
                 testposture = 1
-
+            
+        # Create Rect objects with origin side length.
         for i in self.tile.tile_positions[testposture]:
             testrect = pygame.Rect(self.x + i[0], self.y + i[1], 40, 40)
             testrects.append(testrect)
         
+        # Testing play-field borders.
         for i in testrects:
             if (i.left < self.play_field_rect.left or
                 i.right > self.play_field_rect.right):
-                # testposture = 0
                 return False
-
-        # for i in self.static_blocks:
-        #     for j in testrects:
-        #         if i.rect.colliderect(j):
-        #             return False    
+        
+        # Create Rect objects with smaller side length.
+        for i in self.tile.tile_positions[testposture]:
+            testblock = pygame.Rect(self.x + i[0]+1, self.y + i[1]+1, 38, 38)
+            testblocks.append(testblock)
+        
+        # Checking for collision with other tiles when turning left.
+        for i in testblocks:
+            for j in self.static_blocks:
+                collision = pygame.Rect.colliderect(i, j.rect)
+                if collision:
+                    return False
+        
         return True 
             
     def turn_right(self):
@@ -310,9 +335,6 @@ class Game:
                     self.tile_posture -= 1 
                 if self.tile_posture < 0:
                     self.tile_posture = 1
-
-    def check_side_move(self):
-        pass
 
     def raise_level(self):
         # play level up sound
