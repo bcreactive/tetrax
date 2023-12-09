@@ -48,6 +48,7 @@ class Game:
         self.rightturn_possible = True
         self.leftturn_possible = True
         self.step_active = True
+        self.waiting = False
 
         self.next_tile = self.get_next_tile()
 
@@ -58,27 +59,40 @@ class Game:
 
     def run_game(self):     
         while True:
-            # if not self.game_active:
-            #     print("stopped!")
+            if self.game_over:
+                self.game_active = False
+
+            self.check_events()
+
             if self.game_active:  
-                if self.game_over:
-                    self.game_active = False
                 if not self.game_over:
-                    if not self.moving_blocks:
+                    if not self.moving_blocks and not self.waiting:
                         self.create_new_tile()
                 
-                    self.check_events()
                     self.tile_step()
                     self.check_max_heigth()
                     self.check_borders(self.play_field_rect)
                     self.check_tile_sides()
+                    if self.waiting:
+                        
+                        self.step_active = False
+                        self.wait_to_lock()
+                        # if self.counter == self.drop_speed:
+                        #     self.lock_tile()
+                            # self.step_active = True
+                            # self.waiting = False
+                        # self.wait_to_lock()
+                        # self.lock_tile()
+                    # if not self.waiting:
+                        # self.tile_step()
                     self.check_drop_collision()
                     self.check_bottom()
                     self.tile.update()
                     self.check_full_lines()
 
-                self.scorefield.update()
-                
+                    self.scorefield.update()
+
+            print(self.counter)
             self.update_screen()
             self.clock.tick(self.fps)
 
@@ -129,17 +143,31 @@ class Game:
         self.leftmove_possible = True
         self.rightturn_possible = True
         self.leftturn_possible = True
+        self.waiting = False
+
+    def wait_to_lock(self):
+        if self.counter == self.drop_speed-1:
+            self.lock_tile()
+            # self.waiting = False
+    
+    def lock_tile(self):
+        for j in self.moving_blocks:
+            self.static_blocks.append(j)
+        self.moving_blocks = [] 
+        self.x = 160
+        self.y = 0
+        self.step_active = True
+        self.waiting = False
 
     def check_bottom(self):
         for i in self.moving_blocks:
             if i.rect.bottom == self.screen_rect.bottom:
-                self.tile.moving = False
-                for j in self.moving_blocks:
-                    self.static_blocks.append(j)
-                self.moving_blocks = [] 
-                self.x = 160
-                self.y = 0
+                self.waiting = True
+                self.tile.fast_drop_possible = False
+                self.step_active = False
                 return
+        self.tile.fast_drop_possible = True
+        self.step_active = True
 
     def check_max_heigth(self):
         for block in self.static_blocks:
@@ -148,8 +176,7 @@ class Game:
                 self.game_over = True
                 self.game_active = False
                 return
-                # exit()
-
+        
     def check_drop_collision(self):
         for block in self.moving_blocks:
             test_x = block.rect.x
@@ -158,6 +185,7 @@ class Game:
 
             for i in self.static_blocks:
                 if testrect.colliderect(i.rect):
+                    # self.wait_to_lock = True
                     self.tile.moving = False
                     for j in self.moving_blocks:
                         self.static_blocks.append(j)
@@ -168,14 +196,15 @@ class Game:
                     return
 
     def tile_step(self):
-        if self.tile.moving and self.step_active:  
+        if self.tile.moving: 
             self.counter += 1
-            if self.counter == self.drop_speed:          
-                self.y += 40
-                for i in self.moving_blocks:  
-                    i.rect.y += 40
-                self.counter = 0
-            
+            if self.counter == self.drop_speed:
+                self.counter  = 0
+                if self.step_active:          
+                    self.y += 40
+                    for i in self.moving_blocks:  
+                        i.rect.y += 40
+
     def check_borders(self, field_rect):
         for block in self.moving_blocks:
             if block.rect.left <= field_rect.left:
