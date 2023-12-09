@@ -69,9 +69,9 @@ class Game:
                 # Show startscreen to start or endscreen to restart game.
 
             if self.game_active:  
-                if not self.game_over:
-                    if not self.moving_blocks and not self.waiting:
-                        self.create_new_tile()
+                # if not self.game_over:
+                #     if not self.moving_blocks and not self.waiting:
+                #         self.create_new_tile()
 
                     self.tile_step()
                     
@@ -83,12 +83,16 @@ class Game:
                     
                     self.check_drop_collision()
                     self.check_bottom()
+                    if not self.game_over:
+                        if not self.moving_blocks and not self.waiting:
+                            self.create_new_tile()
+
                     self.check_full_lines()
                     self.tile.update()
 
                     self.scorefield.update()
 
-            # print(self.counter)
+            print(self.counter)
             self.update_screen()
             self.clock.tick(self.fps)
 
@@ -108,7 +112,7 @@ class Game:
                 
                 if event.key == pygame.K_DOWN:
                     if self.tile.moving:
-                        self.step_active = False
+                        # self.step_active = False
                         self.tile.fast_drop = True
 
                 if event.key == pygame.K_m:
@@ -130,8 +134,10 @@ class Game:
 
     def create_new_tile(self):
         self.x = 160
-        self.y = 0
+        self.y = 40
         self.next_tile = self.get_next_tile()
+        # self.counter = self.drop_speed - 1
+        self.counter = -self.drop_speed
         self.tile_posture = 0
         self.tile = Tile(self, self.x, self.y, self.next_tile)
         self.tile.create_tile_blocks()
@@ -140,6 +146,8 @@ class Game:
         self.rightturn_possible = True
         self.leftturn_possible = True
         self.waiting = False
+        self.tile.fast_drop_possible = True
+        self.step_active = True
 
     def wait_to_lock(self):
         if self.counter == self.drop_speed-1:
@@ -162,18 +170,22 @@ class Game:
         self.moving_blocks = [] 
         self.x = 160
         self.y = 0
-        self.step_active = True
         self.waiting = False
-        self.tile.fast_drop_possible = True
-        self.step_active = True
 
     def check_bottom(self):
         for i in self.moving_blocks:
             if i.rect.bottom == self.screen_rect.bottom:
-                self.waiting = True
-                self.tile.fast_drop_possible = False
-                self.step_active = False
-                return
+
+                if self.tile.fast_drop and self.tile.fast_drop_possible:
+                    self.lock_tile()
+                    self.create_new_tile()
+                    return
+                
+                else:
+                    self.waiting = True
+                    self.tile.fast_drop_possible = False
+                    self.step_active = False
+                    return
             
         self.tile.fast_drop_possible = True
         self.step_active = True
@@ -186,10 +198,15 @@ class Game:
 
             for i in self.static_blocks:
                 if testrect.colliderect(i.rect):
-                    self.waiting = True
-                    self.tile.fast_drop_possible = False
-                    self.step_active = False
-                    return 
+                    if self.tile.fast_drop and self.tile.fast_drop_possible:
+                        self.lock_tile()
+                        self.create_new_tile()
+
+                    else:
+                        self.waiting = True
+                        self.tile.fast_drop_possible = False
+                        self.step_active = False
+                        return 
                 
                 self.tile.fast_drop_possible = True
                 self.step_active = True

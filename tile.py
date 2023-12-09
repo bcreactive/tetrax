@@ -174,8 +174,6 @@ class Tile:
         for i in self.game.moving_blocks:
             if i.rect.bottom == self.game.screen_rect.bottom:
                 self.fast_drop_possible = False
-                # self.counter = 0
-                # return
 
         for block in self.game.moving_blocks:
             test_x = block.rect.x
@@ -185,13 +183,11 @@ class Tile:
             for i in self.game.static_blocks:
                 if testrect.colliderect(i.rect):
                     self.fast_drop_possible = False
-                    # self.counter = 0
 
         if self.fast_drop_possible and self.fast_drop and self.moving:
             for i in self.game.moving_blocks:
                 if i.rect.bottom == self.game.screen_rect.bottom:
                     self.fast_drop_possible = False
-                    # return
 
             for block in self.game.moving_blocks:
                 test_x = block.rect.x

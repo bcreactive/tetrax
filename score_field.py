@@ -112,10 +112,14 @@ class Scorefield:
         self.lines_val_rect.center = self.lines_srfc_rect.center
         self.lines_val_rect.top = self.lines_srfc_rect.y + 75
 
-    def update(self):
+    def update(self):       
+        # self.next_tile = self.game.next_tile
+        # self.prep_next()
+
         self.lines = self.game.line_counter
-        self.level = self.game.level
         self.prep_lines()
+
+        self.level = self.game.level
         self.prep_level()
 
     def drawme(self):
