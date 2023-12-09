@@ -34,22 +34,22 @@ class Scorefield:
         self.next_img = pygame.Surface((1, 1))
         self.next_rect = pygame.Rect(0, 0, 0, 0)
 
-        self.level_y = 240
-        self.level_heigth = 160
+        self.level_y = 236
+        self.level_heigth = 164
         self.level_img = pygame.Surface((1, 1))
         self.level_rect = pygame.Rect(0, 0, 0, 0)
         self.level_val_img = pygame.Surface((1, 1)) 
         self.level_val_rect = pygame.Rect(0, 0, 0, 0)
         
-        self.lines_y = 400
-        self.lines_heigth = 160
+        self.lines_y = 396
+        self.lines_heigth = 164
         self.lines_img = pygame.Surface((1, 1))
         self.lines_rect = pygame.Rect(0, 0, 0, 0)
         self.lines_val_img = pygame.Surface((1, 1)) 
         self.lines_val_rect = pygame.Rect(0, 0, 0, 0)
 
-        self.empty_y = 560
-        self.empty_heigth = 160
+        self.empty_y = 556
+        self.empty_heigth = 164
 
     def create_rects(self):
         self.next_srfc_rect = pygame.Rect(self.x_position, self.next_y,

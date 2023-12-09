@@ -45,4 +45,5 @@ class Button:
     def draw_button(self):
         # Draw the button to the screen.
         self.screen.fill(self.button_color, self.rect)
-        self.screen.blit(self.msg_image, self.msg_image_rect)
+        self.screen.blit(self.msg_image, self.msg_image_rect) 
+        pygame.draw.rect(self.screen, (0, 0, 0), self.rect, width=3)

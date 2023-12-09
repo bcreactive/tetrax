@@ -99,7 +99,7 @@ class Game:
 
                     self.scorefield.update()
 
-            print(self.counter)
+            # print(self.counter)
             self.update_screen()
             self.clock.tick(self.fps)
 
