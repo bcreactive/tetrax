@@ -1,9 +1,11 @@
 import pygame
 import sys
 from random import choice
+from time import sleep
 
 from tile import Tile, Block
 from score_field import Scorefield
+from button import Button
 
 
 class Game:
@@ -23,6 +25,9 @@ class Game:
         self.play_field_color = (100, 100, 100)
         self.play_field.fill(self.play_field_color)
 
+        self.title_screen = pygame.image.load("images/title_screen.png")
+        # self.title_screen_rect = pygame.Rect((0, 0, 520, 720))
+
         self.drop_speed = 30
         self.counter = 0
 
@@ -39,9 +44,9 @@ class Game:
         self.line_counter = 0
         self.level = 1
 
-        self.game_active = True
+        self.game_active = False
         self.game_over = False
-        self.level_up = False
+        # self.level_up = False
 
         self.rightmove_possible = True
         self.leftmove_possible = True
@@ -56,16 +61,18 @@ class Game:
         self.tile.create_tile_blocks()
 
         self.scorefield = Scorefield(self)
+        self.button = Button(self, "Play!")
 
     def run_game(self):     
         while True:
             if self.game_over:
                 self.game_active = False
+                pygame.mouse.set_visible(True)
 
             self.check_events()
             
-            if not self.game_active:
-                pass
+            # if not self.game_active:
+            #     pygame.mouse.set_visible(True)
                 # Show startscreen to start or endscreen to restart game.
 
             if self.game_active:  
@@ -97,9 +104,14 @@ class Game:
             self.clock.tick(self.fps)
 
     def check_events(self):
+        # Check for user input.
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()     
+            
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = pygame.mouse.get_pos()
+                self.check_play_button(mouse_pos)
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
@@ -127,6 +139,38 @@ class Game:
                     self.counter = 0
                     self.step_active = True
                     # self.tile.correct_grid_pos()
+
+    def check_play_button(self, mouse_pos):
+        # Start game when button is clicked and reset game stats.
+        if not self.game_active:
+            
+            if self.button.rect.collidepoint(mouse_pos):
+            #     pygame.mixer.Channel(1).play(
+            #         pygame.mixer.Sound('sound\\blib.mp3'))
+
+                sleep(1)
+                self.__init__()
+
+            # #     self.points = 0
+
+            #     self.level = 1
+            #     self.moving_blocks = []
+            #     self.line_counter = 0
+
+            # #     self.drop_speed = 
+
+            # #     self.tracks = [1, 2, 3, 4, 5]
+         
+            #     self.game_over = False
+                pygame.mouse.set_visible(False)
+                self.game_active = True
+            
+            #     # self.endscreen_visible = False
+
+            #     pygame.mouse.set_visible(False)
+            # #     self.scorelabel.prep_level(self.current_level)
+
+       
 
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
@@ -222,6 +266,8 @@ class Game:
     def tile_step(self):
         if self.tile.moving: 
             self.counter += 1
+            if self.counter > self.drop_speed:
+                self.counter = self.drop_speed
             if self.counter == self.drop_speed:
                 self.counter  = 0
                 if self.step_active:          
@@ -474,12 +520,19 @@ class Game:
         self.screen.fill(self.bg_color)
         self.screen.blit(self.play_field, (0, 0))
         self.scorefield.drawme()
-        for block in self.moving_blocks:      
-            pygame.draw.rect(self.screen, block.color, block)
-            pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
-        for block in self.static_blocks:
-            pygame.draw.rect(self.screen, block.color, block)
-            pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
+
+        if not self.game_active:
+            self.screen.blit(self.title_screen, (0, 0))
+            self.button.draw_button()
+
+        if self.game_active:
+            for block in self.moving_blocks:      
+                pygame.draw.rect(self.screen, block.color, block)
+                pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
+            for block in self.static_blocks:
+                pygame.draw.rect(self.screen, block.color, block)
+                pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
+
         pygame.display.flip()
 
 pygame.quit()

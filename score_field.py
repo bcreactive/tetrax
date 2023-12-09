@@ -86,8 +86,8 @@ class Scorefield:
         self.level_rect.top = self.level_srfc_rect.y + 20
 
         self.level_val = f"{self.level}"
-        self.level_val_img = self.number_font.render(self.level_val, True, self.text_color,
-                                            self.color)
+        self.level_val_img = self.number_font.render(
+                            self.level_val, True, self.text_color,self.color)
 
         self.level_val_rect = self.level_val_img.get_rect()
         self.level_val_rect.center = self.level_srfc_rect.center
@@ -105,8 +105,8 @@ class Scorefield:
         self.lines_rect.top = self.lines_srfc_rect.y + 20
 
         self.lines_val = f"{self.lines}"
-        self.lines_val_img = self.number_font.render(self.lines_val, True, self.text_color,
-                                            self.color)
+        self.lines_val_img = self.number_font.render(
+                            self.lines_val, True, self.text_color, self.color)
 
         self.lines_val_rect = self.lines_val_img.get_rect()
         self.lines_val_rect.center = self.lines_srfc_rect.center
