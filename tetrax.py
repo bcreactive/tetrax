@@ -63,28 +63,32 @@ class Game:
                 self.game_active = False
 
             self.check_events()
+            
+            if not self.game_active:
+                pass
+                # Show startscreen to start or endscreen to restart game.
 
             if self.game_active:  
                 if not self.game_over:
                     if not self.moving_blocks and not self.waiting:
                         self.create_new_tile()
-                
+
                     self.tile_step()
+                    
                     self.check_max_heigth()
                     self.check_borders(self.play_field_rect)
                     self.check_tile_sides()
                     if self.waiting:
-                        self.step_active = False
                         self.wait_to_lock()
                     
                     self.check_drop_collision()
                     self.check_bottom()
-                    self.tile.update()
                     self.check_full_lines()
+                    self.tile.update()
 
                     self.scorefield.update()
 
-            print(self.counter)
+            # print(self.counter)
             self.update_screen()
             self.clock.tick(self.fps)
 
@@ -146,7 +150,7 @@ class Game:
             for block in self.moving_blocks:
                 test_x = block.rect.x
                 test_y = block.rect.y + 40
-                testrect = pygame.Rect(test_x, test_y, 38, 38)
+                testrect = pygame.Rect(test_x, test_y, 40, 40)
 
                 for i in self.static_blocks:
                     if testrect.colliderect(i.rect):
@@ -165,7 +169,6 @@ class Game:
 
     def check_bottom(self):
         for i in self.moving_blocks:
-
             if i.rect.bottom == self.screen_rect.bottom:
                 self.waiting = True
                 self.tile.fast_drop_possible = False
@@ -199,24 +202,6 @@ class Game:
                 self.game_active = False
                 return
         
-    # def check_drop_collision(self):
-    #     for block in self.moving_blocks:
-    #         test_x = block.rect.x
-    #         test_y = block.rect.y + 40
-    #         testrect = pygame.Rect(test_x, test_y, 40, 40)
-
-    #         for i in self.static_blocks:
-    #             if testrect.colliderect(i.rect):
-    #                 # self.wait_to_lock = True
-    #                 self.tile.moving = False
-    #                 for j in self.moving_blocks:
-    #                     self.static_blocks.append(j)
-    #                 self.moving_blocks = [] 
-    #                 self.x = 160
-    #                 self.y = 0
-    #                 testrect = ""
-    #                 return
-
     def tile_step(self):
         if self.tile.moving: 
             self.counter += 1
