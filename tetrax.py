@@ -434,7 +434,13 @@ class Game:
         # play level up sound
         print("level up!")
         self.level += 1
-        self.drop_speed -= 4
+        if self.drop_speed > 5:
+            if self.level <= 10:
+                self.drop_speed -= 5
+            elif self.level > 10:
+                self.drop_speed -= 2.5
+        else:
+            self.drop_speed = 5
 
     def remove_line(self, rects):
         remove_rects = rects
