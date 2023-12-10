@@ -17,6 +17,10 @@ class Scorefield:
         self.font = pygame.font.SysFont(None, 36)
         self.number_font = pygame.font.SysFont(None, 54)
 
+        self.prev_tile = self.game.next_tile
+        self.prev_blocks = []
+        self.tile_positions = []
+
         self.load_positions()
         self.create_rects()
 
@@ -73,7 +77,158 @@ class Scorefield:
         self.next_rect = self.next_img.get_rect()
         self.next_rect.center = self.next_srfc_rect.center
         self.next_rect.top = self.next_srfc_rect.y + 20
+        self.create_prev_tile()
+    
+    def create_prev_tile(self):
+        # Create tile blocks for preview-tile.
+        self.tile_positions = []
+        self.prev_x = 440
+        self.prev_y = 100
+        self.load_corr_pos()
 
+        self.tile_positions = self.get_tile_position(self.prev_tile)
+
+        for i in self.tile_positions[0]:
+            block = Block(self.prev_x + i[0], self.prev_y + i[1], 20,
+                          self.prev_tile)
+            self.prev_blocks.append(block)
+
+    def load_corr_pos(self):
+        # Optimized positions for preview-tiles.
+        if self.prev_tile == "Z" or self.prev_tile == "Rev_Z":
+            self.prev_x = 450
+            self.prev_y = 110
+        elif self.prev_tile == "Rev_L":
+            self.prev_x = 460
+        elif self.prev_tile == "Bar":
+            self.prev_x = 470
+        elif self.prev_tile == "Bloc":
+            self.prev_y = 110
+
+    def get_tile_position(self, tile):
+        if tile == "L":
+            positions = [
+                        [(0, 0),
+                        (0, 20),
+                        (0, 40),
+                        (20, 40)],
+                    
+                        [(-20, 20),
+                        (0, 20),
+                        (20, 20),
+                        (-20, 40)],
+                    
+                        [(-20, 0),
+                        (0, 0),
+                        (0, 20),
+                        (0, 40)],
+                        
+                        [(-20, 20),
+                        (0, 20),
+                        (20, 20),
+                        (20, 0)]     
+                        ]
+            return positions
+            
+        elif tile == "Rev_L":
+            positions = [
+                        [(0, 0),
+                        (0, 20),
+                        (0, 40),
+                        (-20, 40)],
+                    
+                        [(-20, 0),
+                        (-20, 20),
+                        (0, 20),
+                        (20, 20)],
+                    
+                        [(-20, 0),
+                        (0, 0),
+                        (-20, 20),
+                        (-20, 40)],
+                        
+                        [(-20, 20),
+                        (0, 20),
+                        (20, 20),
+                        (20, 40)]     
+                        ]
+            return positions
+        
+        elif tile == "Bloc":
+            positions = [
+                        [(0, 0),
+                        (20, 0),
+                        (0, 20),
+                        (20, 20)]
+                        ] 
+            return positions
+            
+        elif tile == "Z":
+            positions = [
+                        [(-20, 0),
+                        (0, 0),
+                        (0, 20),
+                        (20, 20)],
+                    
+                        [(20, 0),
+                        (20, 20),
+                        (0, 20),
+                        (0, 40)]
+                        ]
+            return positions
+            
+        elif tile == "Rev_Z":
+            positions = [
+                        [(0, 0),
+                        (20, 0),
+                        (-20, 20),
+                        (0, 20)],
+                    
+                        [(0, 0),
+                        (0, 20),
+                        (20, 20),
+                        (20, 40)]
+                        ]
+            return positions
+            
+        elif tile == "Tri":
+            positions = [
+                        [(0, 0),
+                        (0, 20),
+                        (20, 20),
+                        (0, 40)],
+                    
+                        [(-20, 20),
+                        (0, 20),
+                        (20, 20),
+                        (0, 40)],
+                    
+                        [(0, 0),
+                        (-20, 20),
+                        (0, 20),
+                        (0, 40)],
+                        
+                        [(0, 0),
+                        (-20, 20),
+                        (0, 20),
+                        (20, 20)]     
+                        ]
+            return positions
+
+        elif tile == "Bar":
+            positions = [
+                        [(-20, 0),
+                        (-20, 20),
+                        (-20, 40),
+                        (-20, 60)],
+                    
+                        [(-40, 40),
+                        (-20, 40),
+                        (0, 40),
+                        (20, 40)]
+                        ]
+            return positions
+        
     def prep_level(self):
         # Get a rendered image with the level.
         self.level = self.game.level
@@ -113,8 +268,8 @@ class Scorefield:
         self.lines_val_rect.top = self.lines_srfc_rect.y + 75
 
     def update(self):       
-        # self.next_tile = self.game.next_tile
-        # self.prep_next()
+        self.prev_tile = self.game.next_tile
+        self.prep_next()
 
         self.lines = self.game.line_counter
         self.prep_lines()
@@ -128,6 +283,10 @@ class Scorefield:
         pygame.draw.rect(self.game.screen, self.frame_color,
                          self.next_srfc_rect, width=4)
         self.game.screen.blit(self.next_img, self.next_rect)
+
+        for block in self.prev_blocks:      
+            pygame.draw.rect(self.game.screen, block.color, block)
+            pygame.draw.rect(self.game.screen, (0, 0, 0), block, width=2)
         
         # Draw current level.
         pygame.draw.rect(self.game.screen, self.color, self.level_srfc_rect)

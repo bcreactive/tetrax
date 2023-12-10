@@ -13,7 +13,7 @@ class Game:
         pygame.init()
 
         self.clock = pygame.time.Clock()
-        self.fps = 30
+        self.fps = 60
 
         self.screen = pygame.display.set_mode((520, 720))
         self.screen_rect = self.screen.get_rect()
@@ -28,7 +28,7 @@ class Game:
         self.title_screen = pygame.image.load("images/title_screen.png")
         # self.title_screen_rect = pygame.Rect((0, 0, 520, 720))
 
-        self.drop_speed = 30
+        self.drop_speed = 60
         self.counter = 0
 
         self.x = 160
@@ -54,10 +54,13 @@ class Game:
         self.leftturn_possible = True
         self.step_active = True
         self.waiting = False
+        # self.endscreen_visible = False
 
+        # self.next_tile = self.get_next_tile()
+        self.current_tile = self.get_next_tile()
         self.next_tile = self.get_next_tile()
 
-        self.tile = Tile(self, self.x, self.y, self.next_tile)
+        self.tile = Tile(self, self.x, self.y, self.current_tile)
         self.tile.create_tile_blocks()
 
         self.scorefield = Scorefield(self)
@@ -70,34 +73,29 @@ class Game:
                 pygame.mouse.set_visible(True)
 
             self.check_events()
-            
-            # if not self.game_active:
-            #     pygame.mouse.set_visible(True)
-                # Show startscreen to start or endscreen to restart game.
 
-            if self.game_active:  
-                # if not self.game_over:
-                #     if not self.moving_blocks and not self.waiting:
-                #         self.create_new_tile()
+            if self.game_active:                     
+                self.tile_step()
 
-                    self.tile_step()
+                self.check_full_lines()
+                self.check_max_heigth()
+                self.check_borders(self.play_field_rect)
+                
+                if self.waiting:
+                    self.wait_to_lock()
                     
-                    self.check_max_heigth()
-                    self.check_borders(self.play_field_rect)
-                    self.check_tile_sides()
-                    if self.waiting:
-                        self.wait_to_lock()
-                    
-                    self.check_drop_collision()
-                    self.check_bottom()
-                    if not self.game_over:
-                        if not self.moving_blocks and not self.waiting:
-                            self.create_new_tile()
+                self.check_drop_collision()
+                self.check_bottom()
+                self.check_tile_sides()       
 
-                    self.check_full_lines()
-                    self.tile.update()
+                if not self.game_over:
+                    if not self.moving_blocks and not self.waiting:
+                        self.create_new_tile()
 
-                    self.scorefield.update()
+                self.check_full_lines()
+                self.tile.update()
+
+                self.scorefield.update()
 
             # print(self.counter)
             self.update_screen()
@@ -143,34 +141,16 @@ class Game:
     def check_play_button(self, mouse_pos):
         # Start game when button is clicked and reset game stats.
         if not self.game_active:
-            
             if self.button.rect.collidepoint(mouse_pos):
             #     pygame.mixer.Channel(1).play(
             #         pygame.mixer.Sound('sound\\blib.mp3'))
-
                 sleep(1)
                 self.__init__()
-
             # #     self.points = 0
-
-            #     self.level = 1
-            #     self.moving_blocks = []
-            #     self.line_counter = 0
-
-            # #     self.drop_speed = 
-
             # #     self.tracks = [1, 2, 3, 4, 5]
          
-            #     self.game_over = False
                 pygame.mouse.set_visible(False)
-                self.game_active = True
-            
-            #     # self.endscreen_visible = False
-
-            #     pygame.mouse.set_visible(False)
-            # #     self.scorelabel.prep_level(self.current_level)
-
-       
+                self.game_active = True       
 
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
@@ -179,11 +159,12 @@ class Game:
     def create_new_tile(self):
         self.x = 160
         self.y = 40
+        self.current_tile = self.next_tile
         self.next_tile = self.get_next_tile()
         # self.counter = self.drop_speed - 1
         self.counter = -self.drop_speed
         self.tile_posture = 0
-        self.tile = Tile(self, self.x, self.y, self.next_tile)
+        self.tile = Tile(self, self.x, self.y, self.current_tile)
         self.tile.create_tile_blocks()
         self.rightmove_possible = True
         self.leftmove_possible = True
@@ -211,6 +192,7 @@ class Game:
     def lock_tile(self):
         for j in self.moving_blocks:
             self.static_blocks.append(j)
+        self.scorefield.prev_blocks = []
         self.moving_blocks = [] 
         self.x = 160
         self.y = 0
@@ -452,7 +434,7 @@ class Game:
         # play level up sound
         print("level up!")
         self.level += 1
-        self.drop_speed -= 10
+        self.drop_speed -= 4
 
     def remove_line(self, rects):
         remove_rects = rects
