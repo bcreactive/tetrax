@@ -172,7 +172,7 @@ class Tile:
 
     def check_fast_drop(self):   
         for i in self.game.moving_blocks:
-            if i.rect.bottom == self.game.screen_rect.bottom + 1:
+            if i.rect.bottom == self.game.screen_rect.bottom + 2:
                 self.fast_drop_possible = False
 
         for block in self.game.moving_blocks:
@@ -186,13 +186,16 @@ class Tile:
 
         if self.fast_drop_possible and self.fast_drop and self.moving:
             for i in self.game.moving_blocks:
-                if i.rect.bottom == self.game.screen_rect.bottom + 1:
+                if i.rect.bottom == self.game.screen_rect.bottom + 2:
                     self.fast_drop_possible = False
 
             for block in self.game.moving_blocks:
                 test_x = block.rect.x
                 test_y = block.rect.y + 40
                 testrect = pygame.Rect(test_x, test_y, 40, 40)
+
+            self.game.y += 40
+            
             for i in self.game.moving_blocks:
                 i.rect.y += 40
 
