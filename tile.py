@@ -151,7 +151,7 @@ class Tile:
         self.y = 0
 
         for i in self.tile_positions[0]:
-            block = Block(self.x + i[0], self.y + i[1], self.side_len,
+            block = Block(self.game, self.x + i[0], self.y + i[1], self.side_len,
                           self.tile)
             self.game.moving_blocks.append(block)
             self.game.tile_posture = 0
@@ -166,89 +166,108 @@ class Tile:
                 # self.x = self.game.x
                 # self.y = self.game.y   
                 for i in self.tile_positions[self.posture]:
-                    block = Block(self.x + i[0], self.y + i[1], self.side_len,
+                    block = Block(self.game, self.x + i[0], self.y + i[1], self.side_len,
                                   self.tile)
                     self.game.moving_blocks.append(block)
 
     def check_fast_drop(self):   
         for i in self.game.moving_blocks:
-            if i.rect.bottom == self.game.screen_rect.bottom + 2:
+            if i.rect.bottom == self.game.screen_rect.bottom:
                 self.fast_drop_possible = False
 
-        for block in self.game.moving_blocks:
-            test_x = block.rect.x
-            test_y = block.rect.y + 40
-            testrect = pygame.Rect(test_x, test_y, 40, 40)
+        for i in self.game.moving_blocks:
+            # test_x = block.rect.x
+            # test_y = block.rect.y + 40
+            # testrect = pygame.Rect(test_x, test_y, 40, 40)
 
-            for i in self.game.static_blocks:
-                if testrect.colliderect(i.rect):
+            for j in self.game.static_blocks:
+                if i.rect.colliderect(j.rect):
                     self.fast_drop_possible = False
 
         if self.fast_drop_possible and self.fast_drop and self.moving:
-            for i in self.game.moving_blocks:
-                if i.rect.bottom == self.game.screen_rect.bottom + 2:
-                    self.fast_drop_possible = False
-
-            for block in self.game.moving_blocks:
-                test_x = block.rect.x
-                test_y = block.rect.y + 40
-                testrect = pygame.Rect(test_x, test_y, 40, 40)
-
             self.game.y += 40
             
             for i in self.game.moving_blocks:
                 i.rect.y += 40
 
-    # def correct_grid_pos(self):
-    #     # self.game.counter = 0
-    #     if self.game.y % self.side_len != 0:
-    #         diff = self.game.y % self.side_len
-    #         # self.game.y += diff
-    #         for i in self.game.moving_blocks:
-    #             i.rect.y += diff
-    #     self.game.counter = 0
-    #     self.game.step_active = True
+    def correct_grid_pos(self):
+        pass
+        # print(self.game.moving_blocks[0].rect.y % self.side_len)
+        # if self.game.moving_blocks[0].rect.y % self.side_len != 0:
+
+        #     for i in self.game.moving_blocks:
+        #         i.rect.y += 20
 
     def update(self): 
-        # self.x = self.game.x
-        # self.y = self.game.y    
-        self.check_fast_drop()
         self.x = self.game.x
-        self.y = self.game.y    
+        self.y = self.game.y  
+        # if not self.fast_drop:  
+        #     self.correct_grid_pos()
+        self.check_fast_drop()   
         self.update_tile_blocks()
 
 
 class Block:
-    def __init__(self, x, y, side, tile):
+    def __init__(self, game, x, y, side, tile):
+        self.game = game
         self.color = self.get_color(tile)
         self.rect = pygame.Rect((x, y, side, side))
 
     def get_color(self, tile):
         if tile == "L":
-            color = (221, 0, 0)
+            color = self.game.color_set[1]
             return color
         
         elif tile == "Rev_L":
-            color = (0, 221, 0)
+            color = self.game.color_set[2]
             return color
         
         elif tile == "Bloc":
-            color = (221, 0, 221)
+            color = self.game.color_set[3]
             return color
         
         elif tile == "Z":
-            color = (221, 221, 0)
+            color = self.game.color_set[4]
             return color
         
         elif tile == "Rev_Z":
-            color = (0, 0, 221)
+            color = self.game.color_set[5]
             return color
         
         elif tile == "Tri":
-            color = (0, 221, 221)
+            color = self.game.color_set[6]
             return color
         
         elif tile == "Bar":
-            color = (221, 221, 221)
+            color = self.game.color_set[7]
             return color
+        
+    # def get_color(self, tile):
+    #     if tile == "L":
+    #         color = (221, 0, 0)
+    #         return color
+        
+    #     elif tile == "Rev_L":
+    #         color = (0, 221, 0)
+    #         return color
+        
+    #     elif tile == "Bloc":
+    #         color = (221, 0, 221)
+    #         return color
+        
+    #     elif tile == "Z":
+    #         color = (221, 221, 0)
+    #         return color
+        
+    #     elif tile == "Rev_Z":
+    #         color = (0, 0, 221)
+    #         return color
+        
+    #     elif tile == "Tri":
+    #         color = (0, 221, 221)
+    #         return color
+        
+    #     elif tile == "Bar":
+    #         color = (221, 221, 221)
+    #         return color
         

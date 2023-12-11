@@ -89,7 +89,7 @@ class Scorefield:
         self.tile_positions = self.get_tile_position(self.prev_tile)
 
         for i in self.tile_positions[0]:
-            block = Block(self.prev_x + i[0], self.prev_y + i[1], 20,
+            block = Block(self.game, self.prev_x + i[0], self.prev_y + i[1], 20,
                           self.prev_tile)
             self.prev_blocks.append(block)
 

@@ -1,6 +1,6 @@
 import pygame
 import sys
-from random import choice
+from random import choice, randint
 from time import sleep
 
 from tile import Tile, Block
@@ -18,16 +18,71 @@ class Game:
         self.screen = pygame.display.set_mode((520, 720))
         self.screen_rect = self.screen.get_rect()
         pygame.display.set_caption("Tetrax")
+
+        self.color_sets = [
+                            [
+                            (27, 36, 71), (144, 82, 188), (238, 181, 156),
+                            (212, 128, 187), (226, 178, 126), (180, 117, 56),
+                            (114, 75, 44), (39, 137, 205),
+                            ], 
+
+                            [
+                            (73, 65, 130), (246, 162, 168), (178, 82, 102),
+                            (138, 196, 195), (178, 139, 120), (150, 104, 136),
+                            (246, 216, 150), 
+
+                            (236, 225, 231), # middle pos unknown
+
+                            ], 
+                        
+                            [
+                            (250, 214, 255), (94, 113, 142), (178, 139, 120),
+                            (114, 75, 44), (100, 54, 75), (105, 91, 89),
+                            (239, 221, 145), (178, 82, 102),
+                            ], 
+                        
+                            [
+                            (212, 128, 187), (71, 114, 56), (97, 165, 63), 
+                            (143, 208, 50), (196, 241, 41), (252, 247, 190), 
+                            (151, 237, 202), (70, 84, 86),
+                            ], 
+                        
+                            [
+                            (136, 163, 188), (40, 44, 60), (105, 102, 130),
+                            (184, 204, 216), (138, 196, 195), (70, 84, 86),
+                            (72, 104, 89), (134, 198, 154),
+                            ], 
+                        
+                            [
+                            (76, 61, 46), (236, 235, 231), (166, 158, 154), 
+                            (89, 87, 87), (40, 44, 60), (86, 79, 91), 
+                            (101, 73, 86), (136, 110, 106),
+                            ], 
+                        
+                            [
+                            (181, 231, 203), (27, 36, 71), (39, 137, 205), 
+                            (66, 191, 232), (230, 231, 240), (138, 161, 246),
+                            (73, 65, 130), (206, 170, 237),
+                            ], 
+
+                            [
+                            (42, 30, 35), (255, 240, 137), (211, 151, 65), 
+                            (76, 61, 46), (198 , 133, 86), (246, 162, 168), 
+                            (100, 54, 75), (238, 230, 234),
+                            ], 
+                        ] 
+        self.color_set = self.get_color_set()
         self.bg_color = (0, 0, 0)
 
         self.play_field = pygame.Surface((400, 720))
         self.play_field_rect = pygame.Rect(0, 0, 400, 720)
-        self.play_field_color = (100, 100, 100)
+        self.play_field_color = self.color_set[0]
         self.play_field.fill(self.play_field_color)
 
         self.title_screen = pygame.image.load("images/title_screen.png")
         # self.title_screen_rect = pygame.Rect((0, 0, 520, 720))
 
+        # self.level_sound = pygame.mixer_music.load("sound/song.mp3")
         self.drop_speed = 60
         self.counter = 0
 
@@ -46,7 +101,6 @@ class Game:
 
         self.game_active = False
         self.game_over = False
-        # self.level_up = False
 
         self.rightmove_possible = True
         self.leftmove_possible = True
@@ -56,7 +110,6 @@ class Game:
         self.waiting = False
         # self.endscreen_visible = False
 
-        # self.next_tile = self.get_next_tile()
         self.current_tile = self.get_next_tile()
         self.next_tile = self.get_next_tile()
 
@@ -76,7 +129,7 @@ class Game:
 
             if self.game_active:                     
                 self.tile_step()
-
+                self.tile.update()
                 self.check_full_lines()
                 self.check_max_heigth()
                 self.check_borders(self.play_field_rect)
@@ -93,11 +146,10 @@ class Game:
                         self.create_new_tile()
 
                 self.check_full_lines()
-                self.tile.update()
+                # self.tile.update()
 
                 self.scorefield.update()
 
-            # print(self.counter)
             self.update_screen()
             self.clock.tick(self.fps)
 
@@ -122,7 +174,7 @@ class Game:
                 
                 if event.key == pygame.K_DOWN:
                     if self.tile.moving:
-                        # self.step_active = False
+                        self.step_active = False
                         self.tile.fast_drop = True
 
                 if event.key == pygame.K_m:
@@ -134,24 +186,29 @@ class Game:
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
                     self.tile.fast_drop = False
-                    self.counter = 0
-                    self.step_active = True
+                    # self.counter = 0
                     # self.tile.correct_grid_pos()
+                    # self.step_active = True
 
     def check_play_button(self, mouse_pos):
         # Start game when button is clicked and reset game stats.
         if not self.game_active:
             if self.button.rect.collidepoint(mouse_pos):
-            #     pygame.mixer.Channel(1).play(
-            #         pygame.mixer.Sound('sound\\blib.mp3'))
                 sleep(1)
                 self.__init__()
             # #     self.points = 0
             # #     self.tracks = [1, 2, 3, 4, 5]
          
                 pygame.mouse.set_visible(False)
-                self.game_active = True       
+                self.game_active = True    
 
+                # pygame.mixer.Channel(0).play(
+                #     pygame.mixer.Sound("sound/song.mp3"))  
+
+    def get_color_set(self):
+        set_nr = randint(0, 7)
+        return self.color_sets[set_nr]
+    
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
         return next_tile
@@ -161,8 +218,8 @@ class Game:
         self.y = 40
         self.current_tile = self.next_tile
         self.next_tile = self.get_next_tile()
-        # self.counter = self.drop_speed - 1
-        self.counter = -self.drop_speed
+        self.counter = 0
+        # self.counter = -self.drop_speed
         self.tile_posture = 0
         self.tile = Tile(self, self.x, self.y, self.current_tile)
         self.tile.create_tile_blocks()
@@ -279,7 +336,7 @@ class Game:
     def check_right_move(self):
         testblocks = []  
         for i in self.moving_blocks:
-            testblock = Block(i.rect.x + 40, i.rect.y, self.tile.side_len, 
+            testblock = Block(self, i.rect.x + 40, i.rect.y, self.tile.side_len, 
                               self.tile)
             testblocks.append(testblock)
    
@@ -293,7 +350,7 @@ class Game:
     def check_left_move(self):
         testblocks = []       
         for i in self.moving_blocks:
-            testblock = Block(i.rect.x - 40, i.rect.y, self.tile.side_len, 
+            testblock = Block(self, i.rect.x - 40, i.rect.y, self.tile.side_len, 
                                self.tile)
             testblocks.append(testblock)
 
@@ -438,9 +495,9 @@ class Game:
             if self.level <= 10:
                 self.drop_speed -= 5
             elif self.level > 10:
-                self.drop_speed -= 2.5
+                self.drop_speed -= 2
         else:
-            self.drop_speed = 5
+            self.drop_speed = 6
 
     def remove_line(self, rects):
         remove_rects = rects
