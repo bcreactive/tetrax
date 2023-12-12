@@ -250,6 +250,8 @@ class Game:
         self.y = 0
         self.waiting = False
 
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound("sound/lock.mp3")) 
+
     def check_bottom(self):
         for i in self.moving_blocks:
             if i.rect.bottom > self.screen_rect.bottom:
@@ -305,7 +307,8 @@ class Game:
     def check_max_heigth(self):
         for block in self.static_blocks:
             if block.rect.y <= 0:
-                print("game over!")
+                pygame.mixer.Channel(0).play(
+                    pygame.mixer.Sound("sound/gameover.mp3")) 
                 self.game_over = True
                 self.game_active = False
                 return
@@ -478,6 +481,9 @@ class Game:
     def turn_right(self):
         right_turn_possible = self.check_right_turn()
         if right_turn_possible:
+
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound("sound/turnr.mp3")) 
+            
             if len(self.tile.tile_positions) == 4:     
                 if self.tile_posture >= 0:
                     self.tile_posture += 1 
@@ -493,6 +499,9 @@ class Game:
     def turn_left(self):
         left_turn_possible = self.check_left_turn()
         if left_turn_possible:
+
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound("sound/turnr.mp3")) 
+            
             if len(self.tile.tile_positions) == 4:     
                 if self.tile_posture >= 0:
                     self.tile_posture -= 1 
@@ -506,7 +515,7 @@ class Game:
                     self.tile_posture = 1
 
     def raise_level(self):
-        # play level up sound
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound("sound/levelup.mp3")) 
         self.level += 1
 
         if self.drop_speed > 5:
