@@ -210,64 +210,38 @@ class Tile:
 class Block:
     def __init__(self, game, x, y, side, tile):
         self.game = game
-        self.color = self.get_color(tile)
+        self.piece = tile
+        self.color = self.get_color()
+        # self.border_color = self.game.color_set[9]
         self.rect = pygame.Rect((x, y, side, side))
 
-    def get_color(self, tile):
-        if tile == "L":
+    def get_color(self):
+        if self.piece == "L":
             color = self.game.color_set[1]
             return color
         
-        elif tile == "Rev_L":
+        elif self.piece == "Rev_L":
             color = self.game.color_set[2]
             return color
         
-        elif tile == "Bloc":
+        elif self.piece == "Bloc":
             color = self.game.color_set[3]
             return color
         
-        elif tile == "Z":
+        elif self.piece == "Z":
             color = self.game.color_set[4]
             return color
         
-        elif tile == "Rev_Z":
+        elif self.piece == "Rev_Z":
             color = self.game.color_set[5]
             return color
         
-        elif tile == "Tri":
+        elif self.piece == "Tri":
             color = self.game.color_set[6]
             return color
         
-        elif tile == "Bar":
+        elif self.piece == "Bar":
             color = self.game.color_set[7]
             return color
         
-    # def get_color(self, tile):
-    #     if tile == "L":
-    #         color = (221, 0, 0)
-    #         return color
-        
-    #     elif tile == "Rev_L":
-    #         color = (0, 221, 0)
-    #         return color
-        
-    #     elif tile == "Bloc":
-    #         color = (221, 0, 221)
-    #         return color
-        
-    #     elif tile == "Z":
-    #         color = (221, 221, 0)
-    #         return color
-        
-    #     elif tile == "Rev_Z":
-    #         color = (0, 0, 221)
-    #         return color
-        
-    #     elif tile == "Tri":
-    #         color = (0, 221, 221)
-    #         return color
-        
-    #     elif tile == "Bar":
-    #         color = (221, 221, 221)
-    #         return color
         

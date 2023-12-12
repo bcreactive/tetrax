@@ -20,6 +20,8 @@ class Game:
         pygame.display.set_caption("Tetrax")
 
         self.color_sets = [
+            # pos_0: playfield, pos_1 - pos_8: blocks, pos_9: blockborder
+
                             [
                             (27, 36, 71), (144, 82, 188), (238, 181, 156),
                             (212, 128, 187), (226, 178, 126), (180, 117, 56),
@@ -71,7 +73,7 @@ class Game:
                             (100, 54, 75), (238, 230, 234),
                             ], 
                         ] 
-        self.color_set = self.get_color_set()
+        self.color_set = self.color_sets[randint(0, 7)]
         self.bg_color = (0, 0, 0)
 
         self.play_field = pygame.Surface((400, 720))
@@ -96,7 +98,7 @@ class Game:
         # self.tile_pool = ["Bar"]
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
 
-        self.line_counter = 0
+        self.line_counter = 9
         self.level = 1
 
         self.game_active = False
@@ -204,10 +206,6 @@ class Game:
 
                 # pygame.mixer.Channel(0).play(
                 #     pygame.mixer.Sound("sound/song.mp3"))  
-
-    def get_color_set(self):
-        set_nr = randint(0, 7)
-        return self.color_sets[set_nr]
     
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
@@ -489,8 +487,8 @@ class Game:
 
     def raise_level(self):
         # play level up sound
-        print("level up!")
         self.level += 1
+
         if self.drop_speed > 5:
             if self.level <= 10:
                 self.drop_speed -= 5
@@ -498,6 +496,16 @@ class Game:
                 self.drop_speed -= 2
         else:
             self.drop_speed = 6
+
+        self.update_block_colors()
+
+    def update_block_colors(self):  
+        self.color_set = self.color_sets[randint(0, 7)]        
+        self.play_field_color = self.color_set[0]
+        self.play_field.fill(self.play_field_color)
+
+        for i in self.static_blocks:
+            i.color = i.get_color()
 
     def remove_line(self, rects):
         remove_rects = rects
@@ -507,7 +515,9 @@ class Game:
             for j in self.static_blocks:
                 if i == j.rect:
                     self.static_blocks.remove(j)
+
         self.line_counter += 1
+        
         if self.line_counter % 10 == 0:
             self.raise_level()
         # self.points += self.level * 100
@@ -558,7 +568,7 @@ class Game:
     def create_static_rects(self):
         rects = []
         for i in self.static_blocks:
-            rects.append(i.rect)
+            rects.append(i)
         return rects
        
     def update_screen(self):
