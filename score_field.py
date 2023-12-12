@@ -8,11 +8,13 @@ class Scorefield:
         self.game = game
 
         # Font and color settings.
-        self.color = (141, 90, 120)
-        self.frame_color = (0, 0, 0)
+        self.color = self.game.color_set[0]
+        self.frame_color = self.game.color_set[8]
 
-        self.text_label_color = (10, 100, 100)
-        self.text_color = (0, 0, 0)
+        # self.text_label_color = (10, 100, 100)
+        # self.text_color = (0, 0, 0)
+        self.text_label_color = self.color
+        self.text_color = self.frame_color
 
         self.font = pygame.font.SysFont(None, 36)
         self.number_font = pygame.font.SysFont(None, 54)
@@ -286,7 +288,7 @@ class Scorefield:
 
         for block in self.prev_blocks:      
             pygame.draw.rect(self.game.screen, block.color, block)
-            pygame.draw.rect(self.game.screen, (0, 0, 0), block, width=2)
+            pygame.draw.rect(self.game.screen, self.frame_color, block, width=2)
         
         # Draw current level.
         pygame.draw.rect(self.game.screen, self.color, self.level_srfc_rect)

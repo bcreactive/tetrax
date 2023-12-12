@@ -151,10 +151,11 @@ class Tile:
         self.y = 0
 
         for i in self.tile_positions[0]:
-            block = Block(self.game, self.x + i[0], self.y + i[1], self.side_len,
-                          self.tile)
+            block = Block(self.game, self.x + i[0], self.y + i[1], 
+                          self.side_len, self.tile)
             self.game.moving_blocks.append(block)
             self.game.tile_posture = 0
+
         self.moving = True
     
     def update_tile_blocks(self):
@@ -163,40 +164,47 @@ class Tile:
 
             if self.moving:
                 self.game.moving_blocks = []
-                # self.x = self.game.x
-                # self.y = self.game.y   
+
                 for i in self.tile_positions[self.posture]:
-                    block = Block(self.game, self.x + i[0], self.y + i[1], self.side_len,
-                                  self.tile)
+                    block = Block(self.game, self.x + i[0], self.y + i[1], 
+                                  self.side_len, self.tile)
                     self.game.moving_blocks.append(block)
 
     def check_fast_drop(self):   
-        for i in self.game.moving_blocks:
-            if i.rect.bottom == self.game.screen_rect.bottom:
-                self.fast_drop_possible = False
+        # for i in self.game.moving_blocks:
+        #     if i.rect.bottom == self.game.screen_rect.bottom:
+        #         self.fast_drop_possible = False
 
-        for i in self.game.moving_blocks:
-            # test_x = block.rect.x
-            # test_y = block.rect.y + 40
-            # testrect = pygame.Rect(test_x, test_y, 40, 40)
+        # for i in self.game.moving_blocks:
+        #     # test_x = block.rect.x
+        #     # test_y = block.rect.y + 40
+        #     # testrect = pygame.Rect(test_x, test_y, 40, 40)
 
-            for j in self.game.static_blocks:
-                if i.rect.colliderect(j.rect):
-                    self.fast_drop_possible = False
+        #     for j in self.game.static_blocks:
+        #         if i.rect.colliderect(j.rect):
+        #             self.fast_drop_possible = False
 
         if self.fast_drop_possible and self.fast_drop and self.moving:
             self.game.y += 40
             
             for i in self.game.moving_blocks:
                 i.rect.y += 40
-
-    def correct_grid_pos(self):
-        pass
-        # print(self.game.moving_blocks[0].rect.y % self.side_len)
-        # if self.game.moving_blocks[0].rect.y % self.side_len != 0:
-
+        
+        # if self.fast_drop_possible and self.fast_drop and self.moving:
+        #     self.game.y += 10
+            
         #     for i in self.game.moving_blocks:
-        #         i.rect.y += 20
+        #         i.rect.y += 10
+
+    # def correct_grid_pos(self):
+    #     # pass
+    #     # print(self.game.moving_blocks[0].rect.y % self.side_len)
+    #     if self.game.moving_blocks[0].rect.y % self.side_len != 0:
+    #         diff = self.game.screen_rect.bottom - self.game.moving_blocks[0].rect.y
+    #         correcture = diff % self.side_len 
+
+    #         for i in self.game.moving_blocks:
+    #             i.rect.y += correcture
 
     def update(self): 
         self.x = self.game.x

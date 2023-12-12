@@ -25,52 +25,49 @@ class Game:
                             [
                             (27, 36, 71), (144, 82, 188), (238, 181, 156),
                             (212, 128, 187), (226, 178, 126), (180, 117, 56),
-                            (114, 75, 44), (39, 137, 205),
+                            (114, 75, 44), (39, 137, 205), (250, 214, 255),
                             ], 
 
                             [
                             (73, 65, 130), (246, 162, 168), (178, 82, 102),
                             (138, 196, 195), (178, 139, 120), (150, 104, 136),
-                            (246, 216, 150), 
-
-                            (236, 225, 231), # middle pos unknown
-
+                            (246, 216, 150), (236, 225, 231), (201, 212, 253),
                             ], 
                         
                             [
                             (250, 214, 255), (94, 113, 142), (178, 139, 120),
                             (114, 75, 44), (100, 54, 75), (105, 91, 89),
-                            (239, 221, 145), (178, 82, 102),
+                            (239, 221, 145), (178, 82, 102), (55, 52, 51)
                             ], 
                         
                             [
-                            (212, 128, 187), (71, 114, 56), (97, 165, 63), 
+                            (144, 82, 188), (71, 114, 56), (97, 165, 63), 
                             (143, 208, 50), (196, 241, 41), (252, 247, 190), 
-                            (151, 237, 202), (70, 84, 86),
+                            (151, 237, 202), (70, 84, 86), (238, 181, 156)
                             ], 
                         
                             [
                             (136, 163, 188), (40, 44, 60), (105, 102, 130),
                             (184, 204, 216), (138, 196, 195), (70, 84, 86),
-                            (72, 104, 89), (134, 198, 154),
+                            (72, 104, 89), (134, 198, 154),(241, 242, 255),
                             ], 
                         
                             [
                             (76, 61, 46), (236, 235, 231), (166, 158, 154), 
                             (89, 87, 87), (40, 44, 60), (86, 79, 91), 
-                            (101, 73, 86), (136, 110, 106),
+                            (101, 73, 86), (136, 110, 106), (66, 191, 232),
                             ], 
                         
                             [
-                            (181, 231, 203), (27, 36, 71), (39, 137, 205), 
+                            (101, 73, 86), (27, 36, 71), (39, 137, 205), 
                             (66, 191, 232), (230, 231, 240), (138, 161, 246),
-                            (73, 65, 130), (206, 170, 237),
+                            (73, 65, 130), (206, 170, 237), (246, 122, 168),
                             ], 
 
                             [
                             (42, 30, 35), (255, 240, 137), (211, 151, 65), 
                             (76, 61, 46), (198 , 133, 86), (246, 162, 168), 
-                            (100, 54, 75), (238, 230, 234),
+                            (100, 54, 75), (238, 230, 234), (252, 247, 190),
                             ], 
                         ] 
         self.color_set = self.color_sets[randint(0, 7)]
@@ -190,7 +187,7 @@ class Game:
                     self.tile.fast_drop = False
                     # self.counter = 0
                     # self.tile.correct_grid_pos()
-                    # self.step_active = True
+                    self.step_active = True
 
     def check_play_button(self, mouse_pos):
         # Start game when button is clicked and reset game stats.
@@ -258,6 +255,8 @@ class Game:
             if i.rect.bottom == self.screen_rect.bottom:
 
                 if self.tile.fast_drop and self.tile.fast_drop_possible:
+                    self.step_active = False
+                    self.tile.fast_drop_possible = False
                     self.lock_tile()
                     self.create_new_tile()
                     return
@@ -272,17 +271,19 @@ class Game:
         self.step_active = True
 
     def check_drop_collision(self):
-        for block in self.moving_blocks:
+        blocks = self.moving_blocks[:]
+        for block in blocks:
             test_x = block.rect.x
             test_y = block.rect.y + 40
             testrect = pygame.Rect(test_x, test_y, 40, 40)
 
             for i in self.static_blocks:
                 if testrect.colliderect(i.rect):
+
                     if self.tile.fast_drop and self.tile.fast_drop_possible:
+                        self.tile.fast_drop_possible = False
                         self.lock_tile()
                         self.create_new_tile()
-
                     else:
                         self.waiting = True
                         self.tile.fast_drop_possible = False
@@ -504,6 +505,10 @@ class Game:
         self.play_field_color = self.color_set[0]
         self.play_field.fill(self.play_field_color)
 
+        self.scorefield.color = self.play_field_color
+        self.scorefield.frame_color = self.color_set[8]
+        self.scorefield.text_color = self.color_set[8]
+
         for i in self.static_blocks:
             i.color = i.get_color()
 
@@ -517,7 +522,7 @@ class Game:
                     self.static_blocks.remove(j)
 
         self.line_counter += 1
-        
+
         if self.line_counter % 10 == 0:
             self.raise_level()
         # self.points += self.level * 100
@@ -583,10 +588,12 @@ class Game:
         if self.game_active:
             for block in self.moving_blocks:      
                 pygame.draw.rect(self.screen, block.color, block)
-                pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
+                pygame.draw.rect(self.screen, self.color_set[8], block,
+                                 width=4)
             for block in self.static_blocks:
                 pygame.draw.rect(self.screen, block.color, block)
-                pygame.draw.rect(self.screen, (0, 0, 0), block, width=4)
+                pygame.draw.rect(self.screen, self.color_set[8], block,
+                                 width=4)
 
         pygame.display.flip()
 
