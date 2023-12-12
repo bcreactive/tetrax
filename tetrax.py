@@ -252,7 +252,16 @@ class Game:
 
     def check_bottom(self):
         for i in self.moving_blocks:
+            if i.rect.bottom > self.screen_rect.bottom:
+                for j in self.moving_blocks:
+                    j.rect.y += 40
+                self.lock_tile()
+                return
+
+        for i in self.moving_blocks:
             if i.rect.bottom == self.screen_rect.bottom:
+                self.check_right_turn()
+                self.check_left_turn()
 
                 if self.tile.fast_drop and self.tile.fast_drop_possible:
                     self.step_active = False
@@ -399,6 +408,11 @@ class Game:
                 i.right > self.play_field_rect.right):
                 return False
             
+         #  Checking for collision with ground.
+        for i in testrects:
+            if i.bottom > self.screen_rect.bottom:
+                return False
+            
         # Create Rect objects with smaller side length.
         for i in self.tile.tile_positions[testposture]:
             testblock = pygame.Rect(self.x + i[0]+1, self.y + i[1]+1, 38, 38)
@@ -442,6 +456,11 @@ class Game:
                 i.right > self.play_field_rect.right):
                 return False
         
+        #  Checking for collision with ground.
+        for i in testrects:
+            if i.bottom > self.screen_rect.bottom:
+                return False
+            
         # Create Rect objects with smaller side length.
         for i in self.tile.tile_positions[testposture]:
             testblock = pygame.Rect(self.x + i[0]+1, self.y + i[1]+1, 38, 38)
@@ -453,7 +472,7 @@ class Game:
                 collision = pygame.Rect.colliderect(i, j.rect)
                 if collision:
                     return False
-        
+
         return True 
             
     def turn_right(self):
@@ -589,11 +608,11 @@ class Game:
             for block in self.moving_blocks:      
                 pygame.draw.rect(self.screen, block.color, block)
                 pygame.draw.rect(self.screen, self.color_set[8], block,
-                                 width=4)
+                                 width=3)
             for block in self.static_blocks:
                 pygame.draw.rect(self.screen, block.color, block)
                 pygame.draw.rect(self.screen, self.color_set[8], block,
-                                 width=4)
+                                 width=3)
 
         pygame.display.flip()
 
