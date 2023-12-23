@@ -20,7 +20,7 @@ class Game:
         pygame.display.set_caption("Tetrax")
 
         self.color_sets = [
-            # pos_0: playfield, pos_1 - pos_8: blocks, pos_9: blockborder
+            # pos_0: playfield, pos_1 - pos_7: blocks, pos_8: blockborder
 
                             [
                             (27, 36, 71), (144, 82, 188), (238, 181, 156),
@@ -35,9 +35,9 @@ class Game:
                             ], 
                         
                             [
-                            (250, 214, 255), (94, 113, 142), (178, 139, 120),
+                            (23, 21, 22), (94, 113, 142), (178, 139, 120),
                             (114, 75, 44), (100, 54, 75), (105, 91, 89),
-                            (239, 221, 145), (178, 82, 102), (55, 52, 51)
+                            (239, 221, 145), (178, 82, 102), (196, 241, 41)
                             ], 
                         
                             [
@@ -78,12 +78,13 @@ class Game:
         self.play_field_color = self.color_set[0]
         self.play_field.fill(self.play_field_color)
 
-        self.title_screen = pygame.image.load("images/title_screen.png")
-        # self.title_screen_rect = pygame.Rect((0, 0, 520, 720))
+        self.title_screen = self.load_title_image()
 
         # self.level_sound = pygame.mixer_music.load("sound/song.mp3")
+
         self.drop_speed = 60
         self.counter = 0
+        self.tetrx_counter = 0
 
         self.x = 160
         self.y = 0
@@ -91,12 +92,16 @@ class Game:
 
         self.moving_blocks = []
         self.static_blocks = []
+        self.all_rects = self.create_all_rects()
 
-        # self.tile_pool = ["Bar"]
+        self.rects = []
+
+        # self.tile_pool = ["Bar", "Bloc"]
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
 
-        self.line_counter = 9
+        self.line_counter = 0
         self.level = 1
+        self.points = 0
 
         self.game_active = False
         self.game_over = False
@@ -126,26 +131,25 @@ class Game:
 
             self.check_events()
 
-            if self.game_active:                     
+            if self.game_active:    
+                                
                 self.tile_step()
+                # self.check_full_lines() 
                 self.tile.update()
-                self.check_full_lines()
                 self.check_max_heigth()
                 self.check_borders(self.play_field_rect)
                 
                 if self.waiting:
                     self.wait_to_lock()
-                    
+                
+                self.check_full_lines()
                 self.check_drop_collision()
                 self.check_bottom()
-                self.check_tile_sides()       
+                self.check_tile_sides()   
 
                 if not self.game_over:
                     if not self.moving_blocks and not self.waiting:
                         self.create_new_tile()
-
-                self.check_full_lines()
-                # self.tile.update()
 
                 self.scorefield.update()
 
@@ -204,6 +208,25 @@ class Game:
                 # pygame.mixer.Channel(0).play(
                 #     pygame.mixer.Sound("sound/song.mp3"))  
     
+    def load_title_image(self):
+        image = randint(1, 8)
+        if image == 1:
+            return pygame.image.load("images/title_col_1.png")
+        elif image == 2:
+            return pygame.image.load("images/title_col_2.png")
+        elif image == 3:
+            return pygame.image.load("images/title_col_3.png")
+        elif image == 4:
+            return pygame.image.load("images/title_col_4.png")
+        elif image == 5:
+            return pygame.image.load("images/title_col_5.png")
+        elif image == 6:
+            return pygame.image.load("images/title_col_6.png")
+        elif image == 7:
+            return pygame.image.load("images/title_col_7.png")
+        elif image == 8:
+            return pygame.image.load("images/title_col_8.png")
+        
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
         return next_tile
@@ -319,11 +342,11 @@ class Game:
             if self.counter > self.drop_speed:
                 self.counter = self.drop_speed
             if self.counter == self.drop_speed:
-                self.counter  = 0
+                self.counter = 0
                 if self.step_active:          
                     self.y += 40
                     for i in self.moving_blocks:  
-                        i.rect.y += 40
+                        i.rect.y += 40               
 
     def check_borders(self, field_rect):
         for block in self.moving_blocks:
@@ -500,7 +523,7 @@ class Game:
         left_turn_possible = self.check_left_turn()
         if left_turn_possible:
 
-            pygame.mixer.Channel(2).play(pygame.mixer.Sound("sound/turnr.mp3")) 
+            pygame.mixer.Channel(2).play(pygame.mixer.Sound("sound/turnl.mp3")) 
             
             if len(self.tile.tile_positions) == 4:     
                 if self.tile_posture >= 0:
@@ -550,10 +573,12 @@ class Game:
                     self.static_blocks.remove(j)
 
         self.line_counter += 1
+        self.points += self.level * 100
+        # # print(self.points)
 
         if self.line_counter % 10 == 0:
             self.raise_level()
-        # self.points += self.level * 100
+      
         self.drop_restblocks(y)
 
     def drop_restblocks(self, y):
@@ -562,24 +587,27 @@ class Game:
                 i.rect.y += 40
 
     def check_full_lines(self):
-        all_rects = self.create_all_rects()
-        static_rects = self.create_static_rects()
         x = 17
+        static_rects = self.create_static_rects()
         for i in range(17):
+            # static_rects = self.create_static_rects()
             testline = []
-            for i in all_rects[x]:
-                if i in static_rects and not i in testline:
-                    testline.append(i)
+            for j in self.all_rects[x]:
+                if j in static_rects and not j in testline:
+                    testline.append(j)
 
             if len(testline) < 10:
                 x -= 1
                 continue
 
             if len(testline) == 10:
-                self.remove_line(testline)
+                # self.rects.append(testline)
+                self.remove_line(testline)   
                 x -= 1
-                continue
-            
+
+                pygame.mixer.Channel(4).play(
+                    pygame.mixer.Sound("sound/linedown.mp3"))
+         
     def create_all_rects(self):
         testrects = []
         linerects = []
@@ -601,7 +629,7 @@ class Game:
     def create_static_rects(self):
         rects = []
         for i in self.static_blocks:
-            rects.append(i)
+            rects.append(i.rect)
         return rects
        
     def update_screen(self):
