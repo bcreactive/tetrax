@@ -101,7 +101,7 @@ class Game:
 
         self.line_counter = 0
         self.level = 1
-        self.points = 10000000
+        self.points = 0
 
         self.game_active = False
         self.game_over = False
