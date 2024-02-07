@@ -134,7 +134,6 @@ class Game:
             if self.game_active:    
                                 
                 self.tile_step()
-                # self.check_full_lines() 
                 self.tile.update()
                 self.check_max_heigth()
                 self.check_borders(self.play_field_rect)
@@ -176,7 +175,8 @@ class Game:
                         self.move_left()
                 
                 if event.key == pygame.K_DOWN:
-                    if self.tile.moving:
+                    on_block = self.block_true()
+                    if self.tile.moving and not on_block:
                         self.step_active = False
                         self.tile.fast_drop = True
 
@@ -189,8 +189,6 @@ class Game:
             if event.type == pygame.KEYUP:
                 if event.key == pygame.K_DOWN:
                     self.tile.fast_drop = False
-                    # self.counter = 0
-                    # self.tile.correct_grid_pos()
                     self.step_active = True
 
     def check_play_button(self, mouse_pos):
@@ -275,57 +273,65 @@ class Game:
 
         pygame.mixer.Channel(0).play(pygame.mixer.Sound("sound/lock.mp3")) 
 
-    def check_bottom(self):
-        for i in self.moving_blocks:
-            if i.rect.bottom > self.screen_rect.bottom:
-                for j in self.moving_blocks:
-                    j.rect.y += 40
-                self.lock_tile()
-                return
-
+    def bottom_true(self):
         for i in self.moving_blocks:
             if i.rect.bottom == self.screen_rect.bottom:
-                self.check_right_turn()
-                self.check_left_turn()
+                return True
+        return False
+    
+    def check_bottom(self):
+        bottom_reached = self.bottom_true()
+        if bottom_reached:
+            self.check_right_turn()
+            self.check_left_turn()
 
-                if self.tile.fast_drop and self.tile.fast_drop_possible:
-                    self.step_active = False
-                    self.tile.fast_drop_possible = False
-                    self.lock_tile()
-                    self.create_new_tile()
-                    return
-                
-                else:
-                    self.waiting = True
-                    self.tile.fast_drop_possible = False
-                    self.step_active = False
-                    return
+            if self.tile.fast_drop and self.tile.fast_drop_possible:
+                self.step_active = False
+                self.tile.fast_drop_possible = False
+                self.lock_tile()
+                self.create_new_tile()
+                return
             
+            else:   
+                self.tile.fast_drop_possible = False
+                self.step_active = False
+                self.waiting = True
+                return
+        
         self.tile.fast_drop_possible = True
         self.step_active = True
 
-    def check_drop_collision(self):
-        blocks = self.moving_blocks[:]
-        for block in blocks:
-            test_x = block.rect.x
-            test_y = block.rect.y + 40
+    def block_true(self):
+        for i in self.moving_blocks:
+            test_x = i.rect.x
+            test_y = i.rect.y + 40
             testrect = pygame.Rect(test_x, test_y, 40, 40)
 
-            for i in self.static_blocks:
-                if testrect.colliderect(i.rect):
+            for j in self.static_blocks:
+                if testrect.colliderect(j.rect):
+                    return True
+        return False
 
-                    if self.tile.fast_drop and self.tile.fast_drop_possible:
-                        self.tile.fast_drop_possible = False
-                        self.lock_tile()
-                        self.create_new_tile()
-                    else:
-                        self.waiting = True
-                        self.tile.fast_drop_possible = False
-                        self.step_active = False
-                        return 
+    def check_drop_collision(self):
+        block_reached = self.block_true()
+
+        if block_reached:
+            self.check_right_turn()
+            self.check_left_turn()
+
+            if self.tile.fast_drop:
+                self.lock_tile()
+                self.create_new_tile()
+                return       
+              
+            else:
+                self.tile.fast_drop_possible = False
+                self.step_active = False
+                self.waiting = True
+                return 
                 
-                self.tile.fast_drop_possible = True
-                self.step_active = True
+        self.tile.fast_drop_possible = True
+        self.step_active = True
 
     def check_max_heigth(self):
         for block in self.static_blocks:
@@ -380,7 +386,9 @@ class Game:
                 if collision:
                     self.rightmove_possible = False
                     return
-
+        if not self.rightmove_possible == False:
+            self.rightmove_possible = True
+        
     def check_left_move(self):
         testblocks = []       
         for i in self.moving_blocks:
@@ -394,6 +402,8 @@ class Game:
                 if collision:
                     self.leftmove_possible = False
                     return
+        if not self.leftmove_possible == False:
+            self.leftmove_possible = True
                 
     def move_right(self):
         self.x += 40
@@ -573,8 +583,6 @@ class Game:
                     self.static_blocks.remove(j)
 
         self.line_counter += 1
-        self.points += self.level * 100
-        # # print(self.points)
 
         if self.line_counter % 10 == 0:
             self.raise_level()
@@ -590,7 +598,6 @@ class Game:
         x = 17
         static_rects = self.create_static_rects()
         for i in range(17):
-            # static_rects = self.create_static_rects()
             testline = []
             for j in self.all_rects[x]:
                 if j in static_rects and not j in testline:
@@ -601,13 +608,31 @@ class Game:
                 continue
 
             if len(testline) == 10:
-                # self.rects.append(testline)
-                self.remove_line(testline)   
+                self.tetrx_counter += 1
+                self.remove_line(testline)  
+                testline = [] 
                 x -= 1
+        
+        if self.counter == 6:
+            self.play_linesound()
+            self.add_points()
+            self.tetrx_counter = 0
 
-                pygame.mixer.Channel(4).play(
-                    pygame.mixer.Sound("sound/linedown.mp3"))
-         
+    def play_linesound(self):
+            if self.tetrx_counter > 0 and self.tetrx_counter < 4:
+                pygame.mixer.Channel(4).play(pygame.mixer.Sound("sound/linedown.mp3"))
+                
+            if self.tetrx_counter == 4:
+                pygame.mixer.Channel(4).play(pygame.mixer.Sound("sound/tetrx.mp3"))
+    
+    def add_points(self):
+        if self.tetrx_counter == 4:
+            self.points += 1000 * self.tetrx_counter * self.level
+            return      
+        else:
+            self.points += 100 * self.tetrx_counter * self.level
+            return
+                
     def create_all_rects(self):
         testrects = []
         linerects = []
