@@ -29,6 +29,7 @@ class Scorefield:
         self.prep_next()
         self.prep_level()
         self.prep_lines()
+        self.prep_points()
 
     def load_positions(self):
         # Position, Surfaces, Rects.
@@ -54,8 +55,8 @@ class Scorefield:
         self.lines_val_img = pygame.Surface((1, 1)) 
         self.lines_val_rect = pygame.Rect(0, 0, 0, 0)
 
-        self.empty_y = 556
-        self.empty_heigth = 164
+        self.points_y = 556
+        self.points_heigth = 164
 
     def create_rects(self):
         self.next_srfc_rect = pygame.Rect(self.x_position, self.next_y,
@@ -67,8 +68,8 @@ class Scorefield:
         self.lines_srfc_rect = pygame.Rect(self.x_position, self.lines_y,
                                         self.width, self.lines_heigth)
         
-        self.empty_srfc_rect = pygame.Rect(self.x_position, self.empty_y,
-                                        self.width, self.empty_heigth)
+        self.points_srfc_rect = pygame.Rect(self.x_position, self.points_y,
+                                        self.width, self.points_heigth)
 
     def prep_next(self):
         # Get a rendered image with the level.
@@ -268,6 +269,35 @@ class Scorefield:
         self.lines_val_rect = self.lines_val_img.get_rect()
         self.lines_val_rect.center = self.lines_srfc_rect.center
         self.lines_val_rect.top = self.lines_srfc_rect.y + 75
+    
+    def prep_points(self):
+        # Get a rendered image with the actual points.
+        self.points = self.game.points
+
+        if self.points < 100000:
+            self.points_font = pygame.font.SysFont(None, 52)
+        elif self.points < 1000000:
+            self.points_font = pygame.font.SysFont(None, 44)
+        elif self.points < 10000000:
+            self.points_font = pygame.font.SysFont(None, 38)
+        elif self.points < 100000000:
+            self.points_font = pygame.font.SysFont(None, 32)
+
+        points_str = "Points:"
+        self.points_img = self.font.render(points_str, True, self.text_color,
+                                            self.color)   
+        
+        self.points_rect = self.points_img.get_rect()
+        self.points_rect.center = self.points_srfc_rect.center
+        self.points_rect.top = self.points_srfc_rect.y + 20
+
+        self.points_val = f"{self.points}"
+        self.points_val_img = self.points_font.render(
+                            self.points_val, True, self.text_color, self.color)
+
+        self.points_val_rect = self.points_val_img.get_rect()
+        self.points_val_rect.center = self.points_srfc_rect.center
+        self.points_val_rect.top = self.points_srfc_rect.y + 75
 
     def update(self):       
         self.prev_tile = self.game.next_tile
@@ -278,6 +308,9 @@ class Scorefield:
 
         self.level = self.game.level
         self.prep_level()
+
+        self.points = self.game.points
+        self.prep_points()
 
     def drawme(self):
         # Draw next tile.
@@ -304,10 +337,12 @@ class Scorefield:
         self.game.screen.blit(self.lines_img, self.lines_rect)
         self.game.screen.blit(self.lines_val_img, self.lines_val_rect)
         
-        # Draw empty field.
-        pygame.draw.rect(self.game.screen, self.color, self.empty_srfc_rect)
+        # Draw points.
+        pygame.draw.rect(self.game.screen, self.color, self.points_srfc_rect)
         pygame.draw.rect(self.game.screen, self.frame_color,
-                         self.empty_srfc_rect, width=4)
+                         self.points_srfc_rect, width=4)
+        self.game.screen.blit(self.points_img, self.points_rect)
+        self.game.screen.blit(self.points_val_img, self.points_val_rect)
         
 
 
