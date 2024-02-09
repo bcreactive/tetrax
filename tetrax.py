@@ -2,10 +2,12 @@ import pygame
 import sys
 from random import choice, randint
 from time import sleep
+import csv
 
 from tile import Tile, Block
 from score_field import Scorefield
 from button import Button
+from highscore import Highscore
 
 
 class Game:
@@ -102,6 +104,9 @@ class Game:
         self.line_counter = 0
         self.level = 1
         self.points = 0
+        self.rank_1 = 0
+        self.rank_2 = 0
+        self.rank_3 = 0
 
         self.game_active = False
         self.game_over = False
@@ -122,6 +127,9 @@ class Game:
 
         self.scorefield = Scorefield(self)
         self.button = Button(self, "Play!")
+        self.highscore = Highscore(self)
+        self.savegame = self.load_savefile()
+        self.set_hiscores()
 
     def run_game(self):     
         while True:
@@ -193,12 +201,11 @@ class Game:
 
     def check_play_button(self, mouse_pos):
         # Start game when button is clicked and reset game stats.
-        if not self.game_active:
+        if not self.game_active and not self.game_over:
             if self.button.rect.collidepoint(mouse_pos):
                 sleep(1)
                 self.__init__()
-            # #     self.points = 0
-            # #     self.tracks = [1, 2, 3, 4, 5]
+            #     self.tracks = [1, 2, 3, 4, 5]
          
                 pygame.mouse.set_visible(False)
                 self.game_active = True    
@@ -224,7 +231,26 @@ class Game:
             return pygame.image.load("images/title_col_7.png")
         elif image == 8:
             return pygame.image.load("images/title_col_8.png")
-        
+
+    def load_savefile(self):
+        file_name = "save_file.csv"
+        with open(file_name, 'r') as csv_file:
+            csv_reader = csv.reader(csv_file)
+            for row in csv_reader:
+                return row
+
+    def set_hiscores(self):
+        self.rank_1 = int(self.savegame[0])
+        self.rank_2 = int(self.savegame[1])
+        self.rank_3 = int(self.savegame[2])
+
+    # def save_savefile(self):
+    #     csv_file = "save_file.csv"
+    #     with open(csv_file, mode='w', newline='') as file:
+    #         writer = csv.writer(file)
+    #         data = [self.rank_1, self.rank_2, self.rank_3]
+    #         writer.writerow(data)
+
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
         return next_tile
@@ -658,15 +684,20 @@ class Game:
         return rects
        
     def update_screen(self):
-        self.screen.fill(self.bg_color)
-        self.screen.blit(self.play_field, (0, 0))
-        self.scorefield.drawme()
+        self.screen.fill(self.color_set[0])
+        # self.screen.blit(self.play_field, (0, 0))
+        # self.scorefield.drawme()
 
-        if not self.game_active:
+        if self.game_over:
+            self.highscore.drawme()
+            
+        if not self.game_active and not self.game_over:
             self.screen.blit(self.title_screen, (0, 0))
-            self.button.draw_button()
+            self.button.draw_button() 
 
         if self.game_active:
+            self.screen.blit(self.play_field, (0, 0))
+            self.scorefield.drawme()
             for block in self.moving_blocks:      
                 pygame.draw.rect(self.screen, block.color, block)
                 pygame.draw.rect(self.screen, self.color_set[8], block,
