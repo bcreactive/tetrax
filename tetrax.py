@@ -104,6 +104,7 @@ class Game:
         self.line_counter = 0
         self.level = 1
         self.points = 0
+        self.new_highscore = False
         self.rank_1_name = ""
         self.rank_1_val = 0
         self.rank_2_name = ""
@@ -251,12 +252,13 @@ class Game:
         self.rank_3_name = self.savegame[4]
         self.rank_3_val = int(self.savegame[5])
         
-    # def save_savefile(self):
-    #     csv_file = "save_file.csv"
-    #     with open(csv_file, mode='w', newline='') as file:
-    #         writer = csv.writer(file)
-    #         data = [self.rank_1, self.rank_2, self.rank_3]
-    #         writer.writerow(data)
+    def save_savefile(self):
+        csv_file = "save_file.csv"
+        with open(csv_file, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            data = [self.rank_1_name, self.rank_1_val, self.rank_2_name, self.rank_2_val,
+                    self.rank_3_name, self.rank_3_val]
+            writer.writerow(data)
 
     def get_next_tile(self):
         next_tile = choice(self.tile_pool)
@@ -371,9 +373,52 @@ class Game:
             if block.rect.y <= 0:
                 pygame.mixer.Channel(0).play(
                     pygame.mixer.Sound("sound/gameover.mp3")) 
+                
+                self.check_points()
+                self.save_savefile()
+
                 self.game_over = True
                 self.game_active = False
                 return
+    
+    def check_points(self):
+        if self.rank_1_val == 0:
+            self.rank_1_val = self.points
+            self.highscore.prep_entries()
+            return
+        elif self.rank_2_val == 0 and self.points < self.rank_1_val:
+            self.rank_2_val = self.points
+            self.highscore.prep_entries()
+            return
+        elif self.rank_3_val == 0 and self.points < self.rank_1_val and self.points < self.rank_2_val:
+            self.rank_3_val = self.points
+            self.highscore.prep_entries()
+            return
+        
+        if self.points > self.rank_1_val:
+            self.new_highscore = True
+            self.rank_3_val = self.rank_2_val
+            self.rank_3_name = self.rank_2_name
+            self.rank_2_val = self.rank_1_val
+            self.rank_2_name = self.rank_1_name
+            self.rank_1_val = self.points
+            self.rank_1_name = "xxx"
+            self.highscore.prep_entries()
+            return
+        if self.points > self.rank_2_val:
+            self.new_highscore = True
+            self.rank_3_val = self.rank_2_val
+            self.rank_3_name = self.rank_2_name
+            self.rank_2_val = self.points
+            self.rank_2_name = "xxx"
+            self.highscore.prep_entries()
+            return
+        if self.points > self.rank_3_val:
+            self.new_highscore = True
+            self.rank_3_val = self.points
+            self.rank_3_name = "xxx"
+            self.highscore.prep_entries()
+            return
         
     def tile_step(self):
         if self.tile.moving: 
