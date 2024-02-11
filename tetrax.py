@@ -104,9 +104,12 @@ class Game:
         self.line_counter = 0
         self.level = 1
         self.points = 0
-        self.rank_1 = 0
-        self.rank_2 = 0
-        self.rank_3 = 0
+        self.rank_1_name = ""
+        self.rank_1_val = 0
+        self.rank_2_name = ""
+        self.rank_2_val = 0
+        self.rank_3_name = ""
+        self.rank_3_val = 0
 
         self.game_active = False
         self.game_over = False
@@ -127,19 +130,20 @@ class Game:
 
         self.scorefield = Scorefield(self)
         self.button = Button(self, "Play!")
-        self.highscore = Highscore(self)
         self.savegame = self.load_savefile()
         self.set_hiscores()
-
+        self.highscore = Highscore(self)
+    
     def run_game(self):     
         while True:
             if self.game_over:
                 self.game_active = False
                 pygame.mouse.set_visible(True)
+                self.button.__init__(self, "Replay?")
 
             self.check_events()
 
-            if self.game_active:    
+            if self.game_active: 
                                 
                 self.tile_step()
                 self.tile.update()
@@ -201,7 +205,7 @@ class Game:
 
     def check_play_button(self, mouse_pos):
         # Start game when button is clicked and reset game stats.
-        if not self.game_active and not self.game_over:
+        if not self.game_active or self.game_over:
             if self.button.rect.collidepoint(mouse_pos):
                 sleep(1)
                 self.__init__()
@@ -240,10 +244,13 @@ class Game:
                 return row
 
     def set_hiscores(self):
-        self.rank_1 = int(self.savegame[0])
-        self.rank_2 = int(self.savegame[1])
-        self.rank_3 = int(self.savegame[2])
-
+        self.rank_1_name = self.savegame[0]
+        self.rank_1_val = int(self.savegame[1])
+        self.rank_2_name = self.savegame[2]
+        self.rank_2_val = int(self.savegame[3])
+        self.rank_3_name = self.savegame[4]
+        self.rank_3_val = int(self.savegame[5])
+        
     # def save_savefile(self):
     #     csv_file = "save_file.csv"
     #     with open(csv_file, mode='w', newline='') as file:
@@ -690,6 +697,7 @@ class Game:
 
         if self.game_over:
             self.highscore.drawme()
+            self.button.draw_button() 
             
         if not self.game_active and not self.game_over:
             self.screen.blit(self.title_screen, (0, 0))
