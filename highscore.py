@@ -1,5 +1,4 @@
 import pygame
-from button import Button
 
 
 class Highscore:
@@ -35,7 +34,7 @@ class Highscore:
         self.title_y = self.y + 20
         self.title_img = pygame.Surface((1, 1))
 
-        # entries rect positions
+        # Entries rect positions
         self.entry_1_x = self.x + 50
         self.entry_1_y = self.y + 20
         self.entry_1_img = pygame.Surface((1, 1))
@@ -59,7 +58,6 @@ class Highscore:
         self.title_rect.top = self.title_rect.y + 30
 
     def prep_entries(self):
-
         # Get rendered images with the names and points.
         self.rank_1_name = self.game.rank_1_name
         self.rank_1_val = self.game.rank_1_val       
@@ -91,16 +89,11 @@ class Highscore:
         self.rank_pos_3_rect.left = self.x + 20
         self.rank_pos_3_rect.top = self.y + 320
 
-    def update(self):     
-        pass  
-        # self.prep()
-
     def drawme(self):
-        # Draw next tile.
+        # Draw leaderboard.
         pygame.draw.rect(self.game.screen, self.color, self.rect)
         pygame.draw.rect(self.game.screen, self.frame_color, self.rect, width=5)
-        # pygame.draw.rect(self.game.screen, self.frame_color,
-        #                  self.next_srfc_rect, width=4)
+      
         self.game.screen.blit(self.title_img, (self.title_x, self.title_y))
         self.game.screen.blit(self.rank_pos_1_img, (self.rank_pos_1_rect.x, self.rank_pos_1_rect.y))
         self.game.screen.blit(self.rank_pos_2_img, (self.rank_pos_2_rect.x, self.rank_pos_2_rect.y))

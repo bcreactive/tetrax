@@ -8,6 +8,7 @@ from tile import Tile, Block
 from score_field import Scorefield
 from button import Button
 from highscore import Highscore
+from name import Name
 
 
 class Game:
@@ -104,7 +105,7 @@ class Game:
         self.line_counter = 0
         self.level = 1
         self.points = 0
-        self.new_highscore = False
+        self.winner = ""
         self.rank_1_name = ""
         self.rank_1_val = 0
         self.rank_2_name = ""
@@ -114,6 +115,7 @@ class Game:
 
         self.game_active = False
         self.game_over = False
+        self.new_highscore = False
 
         self.rightmove_possible = True
         self.leftmove_possible = True
@@ -121,7 +123,6 @@ class Game:
         self.leftturn_possible = True
         self.step_active = True
         self.waiting = False
-        # self.endscreen_visible = False
 
         self.current_tile = self.get_next_tile()
         self.next_tile = self.get_next_tile()
@@ -134,15 +135,19 @@ class Game:
         self.savegame = self.load_savefile()
         self.set_hiscores()
         self.highscore = Highscore(self)
-    
+        self.name = Name(self)
+
     def run_game(self):     
         while True:
-            if self.game_over:
+            self.check_events()
+
+            if self.game_over and self.new_highscore:
+                self.name.update()
+               
+            if self.game_over and not self.new_highscore:
                 self.game_active = False
                 pygame.mouse.set_visible(True)
                 self.button.__init__(self, "Replay?")
-
-            self.check_events()
 
             if self.game_active: 
                                 
@@ -180,18 +185,32 @@ class Game:
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
+                    if self.game_over and self.new_highscore:
+                        self.name.enter = True
+                        continue
                     if self.rightmove_possible and self.tile.moving:
                         self.move_right()
                            
                 if event.key == pygame.K_LEFT:
+                    if self.game_over and self.new_highscore:
+                        self.name.delete = True
+                        continue
                     if self.leftmove_possible and self.tile.moving:
                         self.move_left()
                 
                 if event.key == pygame.K_DOWN:
+                    if self.game_over and self.new_highscore:
+                        self.name.cursor += 1
+                        continue
                     on_block = self.block_true()
                     if self.tile.moving and not on_block:
                         self.step_active = False
                         self.tile.fast_drop = True
+                
+                if event.key == pygame.K_UP:
+                    if self.game_over and self.new_highscore:
+                        self.name.cursor -= 1
+                        continue
 
                 if event.key == pygame.K_m:
                     self.turn_right()
@@ -207,16 +226,18 @@ class Game:
     def check_play_button(self, mouse_pos):
         # Start game when button is clicked and reset game stats.
         if not self.game_active or self.game_over:
-            if self.button.rect.collidepoint(mouse_pos):
-                sleep(1)
-                self.__init__()
-            #     self.tracks = [1, 2, 3, 4, 5]
-         
-                pygame.mouse.set_visible(False)
-                self.game_active = True    
+            if not self.new_highscore:
+                if self.button.rect.collidepoint(mouse_pos):
+                    sleep(1)
+                    self.__init__()
+                #     self.tracks = [1, 2, 3, 4, 5]
+            
+                    pygame.mouse.set_visible(False)
+                    self.game_active = True  
+                    self.new_highscore = False
 
-                # pygame.mixer.Channel(0).play(
-                #     pygame.mixer.Sound("sound/song.mp3"))  
+                    # pygame.mixer.Channel(0).play(
+                    #     pygame.mixer.Sound("sound/song.mp3"))  
     
     def load_title_image(self):
         image = randint(1, 8)
@@ -374,50 +395,45 @@ class Game:
                 pygame.mixer.Channel(0).play(
                     pygame.mixer.Sound("sound/gameover.mp3")) 
                 
-                self.check_points()
-                self.save_savefile()
-
-                self.game_over = True
+                self.check_win()
                 self.game_active = False
+                self.game_over = True
                 return
-    
-    def check_points(self):
-        if self.rank_1_val == 0:
-            self.rank_1_val = self.points
-            self.highscore.prep_entries()
-            return
-        elif self.rank_2_val == 0 and self.points < self.rank_1_val:
-            self.rank_2_val = self.points
-            self.highscore.prep_entries()
-            return
-        elif self.rank_3_val == 0 and self.points < self.rank_1_val and self.points < self.rank_2_val:
-            self.rank_3_val = self.points
-            self.highscore.prep_entries()
-            return
-        
-        if self.points > self.rank_1_val:
+
+    def check_win(self):
+        if (self.points > self.rank_1_val or 
+            self.points > self.rank_2_val and self.points < self.rank_1_val or
+            self.points > self.rank_3_val and self.points < self.rank_2_val):
             self.new_highscore = True
+            return
+
+    def check_points(self):
+        # Check rank.
+        if self.points > self.rank_1_val:
             self.rank_3_val = self.rank_2_val
             self.rank_3_name = self.rank_2_name
             self.rank_2_val = self.rank_1_val
             self.rank_2_name = self.rank_1_name
             self.rank_1_val = self.points
-            self.rank_1_name = "xxx"
-            self.highscore.prep_entries()
+            self.rank_1_name = self.winner
+            self.highscore.__init__(self)
+            self.save_savefile()
             return
-        if self.points > self.rank_2_val:
-            self.new_highscore = True
+        
+        elif self.points > self.rank_2_val and self.points < self.rank_1_val:
             self.rank_3_val = self.rank_2_val
             self.rank_3_name = self.rank_2_name
             self.rank_2_val = self.points
-            self.rank_2_name = "xxx"
-            self.highscore.prep_entries()
+            self.rank_2_name = self.winner
+            self.highscore.__init__(self)
+            self.save_savefile()
             return
-        if self.points > self.rank_3_val:
-            self.new_highscore = True
+        
+        elif self.points > self.rank_3_val and self.points < self.rank_2_val:
             self.rank_3_val = self.points
-            self.rank_3_name = "xxx"
-            self.highscore.prep_entries()
+            self.rank_3_name = self.winner
+            self.highscore.__init__(self)
+            self.save_savefile()
             return
         
     def tile_step(self):
@@ -704,6 +720,7 @@ class Game:
                 pygame.mixer.Channel(4).play(pygame.mixer.Sound("sound/tetrx.mp3"))
     
     def add_points(self):
+        # pass
         if self.tetrx_counter == 4:
             self.points += 1000 * self.tetrx_counter * self.level
             return      
@@ -737,13 +754,14 @@ class Game:
        
     def update_screen(self):
         self.screen.fill(self.color_set[0])
-        # self.screen.blit(self.play_field, (0, 0))
-        # self.scorefield.drawme()
 
-        if self.game_over:
+        if self.game_over and self.new_highscore:
+            self.name.drawme()
+
+        if self.game_over and not self.new_highscore:
             self.highscore.drawme()
             self.button.draw_button() 
-            
+
         if not self.game_active and not self.game_over:
             self.screen.blit(self.title_screen, (0, 0))
             self.button.draw_button() 
