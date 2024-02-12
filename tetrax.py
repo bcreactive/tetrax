@@ -401,15 +401,16 @@ class Game:
                 return
 
     def check_win(self):
-        if (self.points > self.rank_1_val or 
-            self.points > self.rank_2_val and self.points < self.rank_1_val or
-            self.points > self.rank_3_val and self.points < self.rank_2_val):
+        # check if new record happened
+        if (self.points >= self.rank_1_val or 
+            self.points >= self.rank_2_val and self.points < self.rank_1_val or
+            self.points >= self.rank_3_val and self.points < self.rank_2_val):
             self.new_highscore = True
             return
 
     def check_points(self):
         # Check rank.
-        if self.points > self.rank_1_val:
+        if self.points >= self.rank_1_val:
             self.rank_3_val = self.rank_2_val
             self.rank_3_name = self.rank_2_name
             self.rank_2_val = self.rank_1_val
@@ -420,7 +421,7 @@ class Game:
             self.save_savefile()
             return
         
-        elif self.points > self.rank_2_val and self.points < self.rank_1_val:
+        elif self.points >= self.rank_2_val and self.points < self.rank_1_val:
             self.rank_3_val = self.rank_2_val
             self.rank_3_name = self.rank_2_name
             self.rank_2_val = self.points
@@ -429,7 +430,7 @@ class Game:
             self.save_savefile()
             return
         
-        elif self.points > self.rank_3_val and self.points < self.rank_2_val:
+        elif self.points >= self.rank_3_val and self.points < self.rank_2_val:
             self.rank_3_val = self.points
             self.rank_3_name = self.winner
             self.highscore.__init__(self)
