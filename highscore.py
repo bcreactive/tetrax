@@ -12,8 +12,8 @@ class Highscore:
         self.text_label_color = self.color
         self.text_color = self.frame_color
 
-        self.font = pygame.font.SysFont(None, 40)
-        self.number_font = pygame.font.SysFont(None, 36)
+        self.font = pygame.font.SysFont(None, 32)
+        self.number_font = pygame.font.SysFont(None, 32)
 
         self.load_positions()
         self.prep_title()

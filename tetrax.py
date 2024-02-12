@@ -83,7 +83,7 @@ class Game:
 
         self.title_screen = self.load_title_image()
 
-        # self.level_sound = pygame.mixer_music.load("sound/song.mp3")
+        # self.level_sound = pygame.mixer_music.load("sound/level.mp3")
 
         self.drop_speed = 60
         self.counter = 0
@@ -236,8 +236,8 @@ class Game:
                     self.game_active = True  
                     self.new_highscore = False
 
-                    # pygame.mixer.Channel(0).play(
-                    #     pygame.mixer.Sound("sound/song.mp3"))  
+                    pygame.mixer.Channel(0).play(
+                        pygame.mixer.Sound("sound/level.mp3"))  
     
     def load_title_image(self):
         image = randint(1, 8)
@@ -327,7 +327,7 @@ class Game:
         self.y = 0
         self.waiting = False
 
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound("sound/lock.mp3")) 
+        pygame.mixer.Channel(1).play(pygame.mixer.Sound("sound/lock.mp3")) 
 
     def bottom_true(self):
         for i in self.moving_blocks:
@@ -649,7 +649,7 @@ class Game:
                     self.tile_posture = 1
 
     def raise_level(self):
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound("sound/levelup.mp3")) 
+        pygame.mixer.Channel(3).play(pygame.mixer.Sound("sound/levelup.mp3")) 
         self.level += 1
 
         if self.drop_speed > 5:

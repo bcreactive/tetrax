@@ -72,7 +72,7 @@ class Name:
 
     def prep_hint1(self):
         # Get a rendered image with the hint.
-        self.hint_font = pygame.font.SysFont(None, 20)
+        self.hint_font = pygame.font.SysFont(None, 24)
         hint_str = "Use up/down arrows to chose char."
         self.hint_img = self.hint_font.render(hint_str, True, self.text_color,
                                             self.color)   
@@ -83,7 +83,7 @@ class Name:
     
     def prep_hint2(self):
         # Get a rendered image with the hint.
-        self.hint_font = pygame.font.SysFont(None, 20)
+        self.hint_font = pygame.font.SysFont(None, 24)
         hint_str2 = "Use [->] to select or [<-] to delete."
         self.hint_img2 = self.hint_font.render(hint_str2, True, self.text_color,
                                             self.color)   
@@ -115,15 +115,15 @@ class Name:
         text = self.get_text()
         
         # save the chosen name to attribute
-        if self.enter and self.char == "end" or self.enter and len(self.chain) == 6:        
-                text = self.get_text()
-                self.game.winner = text
-                self.game.new_highscore = False
-                self.game.check_points()
-                return
+        if self.enter and self.char == "end" or self.enter and len(self.chain) == 9:        
+            text = self.get_text()
+            self.game.winner = text
+            self.game.new_highscore = False
+            self.game.check_points()
+            return
         
         # check max length of name
-        if self.enter and len(self.chain) <= 5:
+        if self.enter and len(self.chain) <= 8:
             self.chain.append(self.char)
             self.enter = False
 
@@ -133,7 +133,7 @@ class Name:
             self.delete = False
 
         # display the preview name
-        if len(self.chain) == 6:
+        if len(self.chain) == 9:
             self.cursor = 27
 
         self.display = text + self.char
