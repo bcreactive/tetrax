@@ -28,6 +28,7 @@ class Name:
         self.load_positions()
         self.prep_title()
         self.prep_hint1()
+        self.prep_hint2()
         
     def load_positions(self):
         # Main rect positions
@@ -40,19 +41,24 @@ class Name:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         # Title rect positions
-        self.title_x = self.x + 50
+        self.title_x = self.x + 75
         self.title_y = self.y + 20
         self.title_img = pygame.Surface((1, 1))
 
         # Display rect positions
-        self.display_x = self.x + 50
-        self.display_y = self.y + 420
+        self.display_x = self.x + 150
+        self.display_y = self.y + 320
         self.display_img = pygame.Surface((1, 1))
 
         # Hint rect positions
-        self.hint_x = self.x + 50
+        self.hint_x = self.x + 75
         self.hint_y = self.y + 120
         self.hint_img = pygame.Surface((1, 1))
+
+        # Hint2 rect positions
+        self.hint_x2 = self.x + 75
+        self.hint_y2 = self.y + 220
+        self.hint_img2 = pygame.Surface((1, 1))
 
     def prep_title(self):
         # Get a rendered image with the level.
@@ -74,6 +80,17 @@ class Name:
         self.hint_rect = self.hint_img.get_rect()
         self.hint_rect.center = self.rect.center
         self.hint_rect.top = self.hint_y + 30
+    
+    def prep_hint2(self):
+        # Get a rendered image with the hint.
+        self.hint_font = pygame.font.SysFont(None, 20)
+        hint_str2 = "Use [->] to select or [<-] to delete."
+        self.hint_img2 = self.hint_font.render(hint_str2, True, self.text_color,
+                                            self.color)   
+           
+        self.hint_rect2 = self.hint_img2.get_rect()
+        self.hint_rect2.center = self.rect.center
+        self.hint_rect2.top = self.hint_y2 + 30
 
     def prep_display(self):
         # Get rendered image with the name characters.
@@ -139,4 +156,5 @@ class Name:
         self.game.screen.blit(self.title_img, (self.title_x, self.title_y))
         self.game.screen.blit(self.display_img, (self.display_x, self.display_y))
         self.game.screen.blit(self.hint_img, (self.hint_x, self.hint_y))
+        self.game.screen.blit(self.hint_img2, (self.hint_x2, self.hint_y2))
     

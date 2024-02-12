@@ -12,8 +12,8 @@ class Highscore:
         self.text_label_color = self.color
         self.text_color = self.frame_color
 
-        self.font = pygame.font.SysFont(None, 50)
-        self.number_font = pygame.font.SysFont(None, 50)
+        self.font = pygame.font.SysFont(None, 40)
+        self.number_font = pygame.font.SysFont(None, 36)
 
         self.load_positions()
         self.prep_title()
@@ -66,7 +66,8 @@ class Highscore:
                                             self.color)   
         
         self.rank_pos_1_rect = self.rank_pos_1_img.get_rect()
-        self.rank_pos_1_rect.left = self.x + 20
+        # self.rank_pos_1_rect.left = self.x + 20
+        self.rank_pos_1_rect.center = self.rect.center
         self.rank_pos_1_rect.top = self.y + 120
 
         self.rank_2_name = self.game.rank_2_name
@@ -76,7 +77,7 @@ class Highscore:
                                             self.color)   
         
         self.rank_pos_2_rect = self.rank_pos_2_img.get_rect()
-        self.rank_pos_2_rect.left = self.x + 20
+        self.rank_pos_2_rect.center = self.rect.center
         self.rank_pos_2_rect.top = self.y + 220
 
         self.rank_3_name = self.game.rank_3_name
@@ -86,7 +87,7 @@ class Highscore:
                                             self.color)   
         
         self.rank_pos_3_rect = self.rank_pos_3_img.get_rect()
-        self.rank_pos_3_rect.left = self.x + 20
+        self.rank_pos_3_rect.center = self.rect.center
         self.rank_pos_3_rect.top = self.y + 320
 
     def drawme(self):
