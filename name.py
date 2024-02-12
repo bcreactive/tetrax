@@ -116,6 +116,9 @@ class Name:
             self.delete = False
 
         # display the preview name
+        if len(self.chain) == 6:
+            self.cursor = 27
+
         self.display = text + self.char
 
     def get_text(self):
