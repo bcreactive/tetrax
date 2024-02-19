@@ -4,6 +4,10 @@ from tile import Block
 
 
 class Scorefield:
+    """This class provides the infoboard at the right border. The scorefield
+    shows the next tile, amount of destroyed lines, actual level and the 
+    score."""
+
     def __init__(self, game):
         self.game = game
 
@@ -11,8 +15,6 @@ class Scorefield:
         self.color = self.game.color_set[0]
         self.frame_color = self.game.color_set[8]
 
-        # self.text_label_color = (10, 100, 100)
-        # self.text_color = (0, 0, 0)
         self.text_label_color = self.color
         self.text_color = self.frame_color
 
@@ -32,7 +34,7 @@ class Scorefield:
         self.prep_points()
 
     def load_positions(self):
-        # Position, Surfaces, Rects.
+        # Positions, Surfaces, Rects.
         self.width =  120
         self.x_position = 400
 
@@ -109,6 +111,7 @@ class Scorefield:
             self.prev_y = 110
 
     def get_tile_position(self, tile):
+        # Tile positions to create preview.
         if tile == "L":
             positions = [
                         [(0, 0),
@@ -274,6 +277,7 @@ class Scorefield:
         # Get a rendered image with the actual points.
         self.points = self.game.points
 
+        # Adjust the font size with increasing score-lenght.
         if self.points < 100000:
             self.points_font = pygame.font.SysFont(None, 52)
         elif self.points < 1000000:
