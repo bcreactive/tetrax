@@ -2,6 +2,9 @@ import pygame
 
 
 class Tile:
+    """This class contains the tile-related attributes like tile positions and
+    methods to create and update a tile, made of blocks."""
+
     def __init__(self, game, x, y, tile):
         self.game = game
         self.x = x
@@ -23,6 +26,7 @@ class Tile:
         self.moving = True
     
     def get_tile_position(self, tile):
+        # Tile positions for any possible posture.
         if tile == "L":
             positions = [
                         [(0, 0),
@@ -149,7 +153,7 @@ class Tile:
     def create_tile_blocks(self):
         self.x = 160
         self.y = 0
-
+        # Create tile in standard position.
         for i in self.tile_positions[0]:
             block = Block(self.game, self.x + i[0], self.y + i[1], 
                           self.side_len, self.tile)
@@ -159,6 +163,7 @@ class Tile:
         self.moving = True
     
     def update_tile_blocks(self):
+        # Recreate tile, if rotated.
         if not self.posture == self.game.tile_posture:
             self.posture = self.game.tile_posture
 
@@ -185,6 +190,9 @@ class Tile:
 
 
 class Block:
+    """This class create the block-rects to build a tile with its correct
+    color. """
+
     def __init__(self, game, x, y, side, tile):
         self.game = game
         self.piece = tile
