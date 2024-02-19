@@ -13,14 +13,12 @@ class Button:
         self.height = 80
 
         self.msg = msg
+
         # Set the dimensions, color and font of the button.
-        
-        # if msg == "Play!":
         self.width, self.height = 180, 70
         self.button_color = (184, 105, 98)
         self.text_color = (245, 238, 155)
-        
-       
+    
         self.font = pygame.font.SysFont(None, 60)
 
         # Build the button's rect object and set position.
@@ -29,7 +27,6 @@ class Button:
         self.rect.y = 30
 
         self.load_positions()
-
         self.prep_msg(msg)
 
     def load_positions(self):
@@ -42,7 +39,6 @@ class Button:
             self.rect.x = 160
             self.rect.y = 500
 
-
     def prep_msg(self, msg):
         # Get a rendered image of the buttontext.
         self.msg_image = self.font.render(msg, True, self.text_color,
@@ -54,4 +50,5 @@ class Button:
         # Draw the button to the screen.
         self.screen.fill(self.button_color, self.rect)
         self.screen.blit(self.msg_image, self.msg_image_rect) 
-        pygame.draw.rect(self.screen, self.game.color_set[8], self.rect, width=3)
+        pygame.draw.rect(self.screen, self.game.color_set[8],
+                         self.rect, width=3)
