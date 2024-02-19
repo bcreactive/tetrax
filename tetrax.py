@@ -12,6 +12,9 @@ from name import Name
 
 
 class Game:
+    """This is the main game class for tetrx, containing the main loop:
+    detecting user input, update game objects, draw game objects to screen."""
+
     def __init__(self):
         pygame.init()
 
@@ -20,7 +23,7 @@ class Game:
 
         self.screen = pygame.display.set_mode((520, 720))
         self.screen_rect = self.screen.get_rect()
-        pygame.display.set_caption("Tetrax")
+        pygame.display.set_caption("Tetr_x")
 
         self.color_sets = [
             # pos_0: playfield, pos_1 - pos_7: blocks, pos_8: blockborder
@@ -83,10 +86,12 @@ class Game:
 
         self.title_screen = self.load_title_image()
 
-        # self.level_sound = pygame.mixer_music.load("sound/level.mp3")
+        # self.intro_sound = pygame.mixer_music.load("sound/intro.mp3")
 
         self.drop_speed = 60
+        # Counter for dropping the tile one step.
         self.counter = 0
+        # Counter to detect the amount of destroyed lines.
         self.tetrx_counter = 0
 
         self.x = 160
@@ -95,8 +100,8 @@ class Game:
 
         self.moving_blocks = []
         self.static_blocks = []
-        self.all_rects = self.create_all_rects()
 
+        self.all_rects = self.create_all_rects()
         self.rects = []
 
         # self.tile_pool = ["Bar", "Bloc"]
@@ -105,6 +110,7 @@ class Game:
         self.line_counter = 0
         self.level = 1
         self.points = 0
+
         self.winner = ""
         self.rank_1_name = ""
         self.rank_1_val = 0
@@ -138,6 +144,7 @@ class Game:
         self.name = Name(self)
 
     def run_game(self):     
+        # Main game loop.
         while True:
             self.check_events()
 
@@ -145,12 +152,9 @@ class Game:
                 self.name.update()
                
             if self.game_over and not self.new_highscore:
-                self.game_active = False
-                pygame.mouse.set_visible(True)
-                self.button.__init__(self, "Replay?")
+                self.ask_replay()
 
-            if self.game_active: 
-                                
+            if self.game_active:                     
                 self.tile_step()
                 self.tile.update()
                 self.check_max_heigth()
@@ -188,6 +192,7 @@ class Game:
                     if self.game_over and self.new_highscore:
                         self.name.enter = True
                         continue
+
                     if self.rightmove_possible and self.tile.moving:
                         self.move_right()
                            
@@ -195,6 +200,7 @@ class Game:
                     if self.game_over and self.new_highscore:
                         self.name.delete = True
                         continue
+
                     if self.leftmove_possible and self.tile.moving:
                         self.move_left()
                 
@@ -202,7 +208,9 @@ class Game:
                     if self.game_over and self.new_highscore:
                         self.name.cursor += 1
                         continue
+
                     on_block = self.block_true()
+
                     if self.tile.moving and not on_block:
                         self.step_active = False
                         self.tile.fast_drop = True
@@ -239,6 +247,11 @@ class Game:
                     pygame.mixer.Channel(0).play(
                         pygame.mixer.Sound("sound/level.mp3"))  
     
+    def ask_replay(self):
+        self.game_active = False
+        pygame.mouse.set_visible(True)
+        self.button.__init__(self, "Replay?")
+        
     def load_title_image(self):
         image = randint(1, 8)
         if image == 1:
@@ -277,8 +290,10 @@ class Game:
         csv_file = "save_file.csv"
         with open(csv_file, mode='w', newline='') as file:
             writer = csv.writer(file)
-            data = [self.rank_1_name, self.rank_1_val, self.rank_2_name, self.rank_2_val,
-                    self.rank_3_name, self.rank_3_val]
+            data = (
+                    [self.rank_1_name, self.rank_1_val, self.rank_2_name,
+                    self.rank_2_val, self.rank_3_name, self.rank_3_val]
+                    )
             writer.writerow(data)
 
     def get_next_tile(self):
@@ -291,7 +306,6 @@ class Game:
         self.current_tile = self.next_tile
         self.next_tile = self.get_next_tile()
         self.counter = 0
-        # self.counter = -self.drop_speed
         self.tile_posture = 0
         self.tile = Tile(self, self.x, self.y, self.current_tile)
         self.tile.create_tile_blocks()
@@ -305,10 +319,12 @@ class Game:
 
     def wait_to_lock(self):
         if self.counter == self.drop_speed-1:
+            # lock tile, if ground is reached.
             for i in self.moving_blocks:
                 if i.rect.bottom == self.screen_rect.bottom:
                     self.lock_tile()
 
+            # lock tile, if on top of other tile.
             for block in self.moving_blocks:
                 test_x = block.rect.x
                 test_y = block.rect.y + 40
@@ -319,6 +335,7 @@ class Game:
                         self.lock_tile()
     
     def lock_tile(self):
+        # Pass moving blocks to static blocks and reset list of moving blocks.
         for j in self.moving_blocks:
             self.static_blocks.append(j)
         self.scorefield.prev_blocks = []
@@ -336,12 +353,14 @@ class Game:
         return False
     
     def check_bottom(self):
+        # Check collision tile/bottom.
         bottom_reached = self.bottom_true()
         if bottom_reached:
             self.check_right_turn()
             self.check_left_turn()
 
             if self.tile.fast_drop and self.tile.fast_drop_possible:
+                # locking tile immediately, if dropped fast.
                 self.step_active = False
                 self.tile.fast_drop_possible = False
                 self.lock_tile()
@@ -349,6 +368,7 @@ class Game:
                 return
             
             else:   
+                # Keeping tile movable for one step.
                 self.tile.fast_drop_possible = False
                 self.step_active = False
                 self.waiting = True
@@ -369,6 +389,7 @@ class Game:
         return False
 
     def check_drop_collision(self):
+        # Check collision tile/tile.
         block_reached = self.block_true()
 
         if block_reached:
@@ -376,11 +397,13 @@ class Game:
             self.check_left_turn()
 
             if self.tile.fast_drop:
+                # locking tile immediately, if dropped fast.
                 self.lock_tile()
                 self.create_new_tile()
                 return       
               
             else:
+                # Keeping tile movable for one step.
                 self.tile.fast_drop_possible = False
                 self.step_active = False
                 self.waiting = True
@@ -390,6 +413,7 @@ class Game:
         self.step_active = True
 
     def check_max_heigth(self):
+        # Returns game over, if max height is reached.
         for block in self.static_blocks:
             if block.rect.y <= 0:
                 pygame.mixer.Channel(0).play(
@@ -401,15 +425,17 @@ class Game:
                 return
 
     def check_win(self):
-        # check if new record happened
-        if (self.points >= self.rank_1_val or 
-            self.points >= self.rank_2_val and self.points <= self.rank_1_val or
-            self.points > self.rank_3_val and self.points <= self.rank_2_val):
+        # Check if new record happened.
+        if (
+            self.points >= self.rank_1_val or 
+            self.points >= self.rank_2_val and self.points <= self.rank_1_val
+            or self.points > self.rank_3_val and self.points <= self.rank_2_val
+            ):
             self.new_highscore = True
             return
 
     def check_points(self):
-        # Check rank.
+        # Check ranking, initialize highscore view and save the scores.
         if self.points >= self.rank_1_val:
             self.rank_3_val = self.rank_2_val
             self.rank_3_name = self.rank_2_name
@@ -444,6 +470,7 @@ class Game:
         return
         
     def tile_step(self):
+        # Increase the drop-counter.
         if self.tile.moving: 
             self.counter += 1
             if self.counter > self.drop_speed:
@@ -456,6 +483,7 @@ class Game:
                         i.rect.y += 40               
 
     def check_borders(self, field_rect):
+        # Check if left/right border is reached.
         for block in self.moving_blocks:
             if block.rect.left <= field_rect.left:
                 self.leftmove_possible = False  
@@ -475,10 +503,11 @@ class Game:
         self.check_left_move()
 
     def check_right_move(self):
+        # Check if a tile blocks the right side.
         testblocks = []  
         for i in self.moving_blocks:
-            testblock = Block(self, i.rect.x + 40, i.rect.y, self.tile.side_len, 
-                              self.tile)
+            testblock = Block(self, i.rect.x + 40, i.rect.y,
+                              self.tile.side_len, self.tile)
             testblocks.append(testblock)
    
         for i in testblocks:
@@ -491,10 +520,11 @@ class Game:
             self.rightmove_possible = True
         
     def check_left_move(self):
+        # Check if a tile blocks the left side.
         testblocks = []       
         for i in self.moving_blocks:
-            testblock = Block(self, i.rect.x - 40, i.rect.y, self.tile.side_len, 
-                               self.tile)
+            testblock = Block(self, i.rect.x - 40, i.rect.y,
+                              self.tile.side_len, self.tile)
             testblocks.append(testblock)
 
         for i in testblocks:
@@ -522,7 +552,10 @@ class Game:
         testposture = 0
         
         # Create the posture to get position for test-tile.
-        if len(self.tile.tile_positions) == 4:     
+        if len(self.tile.tile_positions) == 1:
+            return True
+        
+        elif len(self.tile.tile_positions) == 4:     
             if not self.tile_posture == 3:
                 testposture = self.tile_posture + 1 
             if self.tile_posture == 3:
@@ -649,6 +682,7 @@ class Game:
                     self.tile_posture = 1
 
     def raise_level(self):
+        # levelup for 10 destroyed lines.
         pygame.mixer.Channel(3).play(pygame.mixer.Sound("sound/levelup.mp3")) 
         self.level += 1
 
@@ -663,6 +697,7 @@ class Game:
         self.update_block_colors()
 
     def update_block_colors(self):  
+        # Get a new colorset, if levelup is reached.
         self.color_set = self.color_sets[randint(0, 7)]        
         self.play_field_color = self.color_set[0]
         self.play_field.fill(self.play_field_color)
@@ -675,6 +710,7 @@ class Game:
             i.color = i.get_color()
 
     def remove_line(self, rects):
+        # Remove the static blcks, when a line is cleared.
         remove_rects = rects
         y = remove_rects[0].y
 
@@ -691,11 +727,13 @@ class Game:
         self.drop_restblocks(y)
 
     def drop_restblocks(self, y):
+        # Dropping the blocks above a destroyed line.
         for i in self.static_blocks:
             if i.rect.y < y:
                 i.rect.y += 40
 
     def check_full_lines(self):
+        # Check if there's a full line.
         x = 17
         static_rects = self.create_static_rects()
         for i in range(17):
@@ -715,19 +753,23 @@ class Game:
                 x -= 1
         
         if self.counter == 6:
+            # Checking the amount of destroyed lines, if counter is at 6:
+            # 3 frames are needed to have the destroyed lines counted correct.
             self.play_linesound()
             self.add_points()
             self.tetrx_counter = 0
 
     def play_linesound(self):
-            if self.tetrx_counter > 0 and self.tetrx_counter < 4:
-                pygame.mixer.Channel(4).play(pygame.mixer.Sound("sound/linedown.mp3"))
+        if self.tetrx_counter > 0 and self.tetrx_counter < 4:
+            pygame.mixer.Channel(4).play(
+                pygame.mixer.Sound("sound/linedown.mp3"))
                 
-            if self.tetrx_counter == 4:
-                pygame.mixer.Channel(4).play(pygame.mixer.Sound("sound/tetrx.mp3"))
+        if self.tetrx_counter == 4:
+            pygame.mixer.Channel(4).play(
+                pygame.mixer.Sound("sound/tetrx.mp3"))
     
     def add_points(self):
-        # pass
+        # Extra points for 4 simultanously destroyed lines.
         if self.tetrx_counter == 4:
             self.points += 1000 * self.tetrx_counter * self.level
             return      
@@ -736,6 +778,7 @@ class Game:
             return
                 
     def create_all_rects(self):
+        # Create the grid with rect objects to check full lines.
         testrects = []
         linerects = []
         x = 0
@@ -754,12 +797,14 @@ class Game:
         return testrects
 
     def create_static_rects(self):
+        # Copy the static rect objects to check full lines.
         rects = []
         for i in self.static_blocks:
             rects.append(i.rect)
         return rects
        
     def update_screen(self):
+        # Draw the game objects to screen.
         self.screen.fill(self.color_set[0])
 
         if self.game_over and self.new_highscore:

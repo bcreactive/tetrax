@@ -30,7 +30,7 @@ class Highscore:
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
         # Title rect positions
-        self.title_x = self.x + 50
+        self.title_x = self.x + 100
         self.title_y = self.y + 20
         self.title_img = pygame.Surface((1, 1))
 

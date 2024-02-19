@@ -14,7 +14,7 @@ class Name:
         self.text_color = self.frame_color
 
         self.font = pygame.font.SysFont(None, 40)
-        self.number_font = pygame.font.SysFont(None, 40)
+        self.preview_font = pygame.font.SysFont(None, 50)
 
         self.display = ""
         self.pool = [" ", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z","end"]
@@ -46,7 +46,7 @@ class Name:
         self.title_img = pygame.Surface((1, 1))
 
         # Display rect positions
-        self.display_x = self.x + 150
+        self.display_x = self.x + 75
         self.display_y = self.y + 320
         self.display_img = pygame.Surface((1, 1))
 
@@ -94,7 +94,7 @@ class Name:
 
     def prep_display(self):
         # Get rendered image with the name characters.
-        self.display_img = self.font.render(self.display, True, self.text_color,
+        self.display_img = self.preview_font.render(self.display, True, self.text_color,
                                             self.text_box_color)   
            
         self.display_rect = self.display_img.get_rect()
