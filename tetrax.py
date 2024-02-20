@@ -236,10 +236,8 @@ class Game:
         if not self.game_active or self.game_over:
             if not self.new_highscore:
                 if self.button.rect.collidepoint(mouse_pos):
-                    sleep(1)
-                    self.__init__()
-                #     self.tracks = [1, 2, 3, 4, 5]
-            
+                    pygame.time.wait(500)
+                    self.__init__()            
                     pygame.mouse.set_visible(False)
                     self.game_active = True  
                     self.new_highscore = False
@@ -413,7 +411,7 @@ class Game:
         self.step_active = True
 
     def check_max_heigth(self):
-        # Returns game over, if max height is reached.
+        # set the game over attribute to true, if max height is reached.
         for block in self.static_blocks:
             if block.rect.y <= 0:
                 pygame.mixer.Channel(0).play(
@@ -432,6 +430,10 @@ class Game:
             or self.points > self.rank_3_val and self.points <= self.rank_2_val
             ):
             self.new_highscore = True
+
+            pygame.time.wait(2000)
+            pygame.mixer.Channel(1).play(
+                pygame.mixer.Sound("sound/newrecord.mp3"))
             return
 
     def check_points(self):
