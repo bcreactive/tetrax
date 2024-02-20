@@ -2,6 +2,9 @@ import pygame
 
 
 class Highscore:
+    """The highscore class creates the leaderboard. It pops up if the game is 
+    lost, shows the top 3 ranks and a button to restart the game."""
+
     def __init__(self, game):
         self.game = game
 
@@ -62,19 +65,18 @@ class Highscore:
         self.rank_1_name = self.game.rank_1_name
         self.rank_1_val = self.game.rank_1_val       
         self.rank_pos_1 = f"1. {self.rank_1_name}: {self.rank_1_val} pts."
-        self.rank_pos_1_img = self.font.render(self.rank_pos_1, True, self.text_color,
-                                            self.color)   
+        self.rank_pos_1_img = self.font.render(
+            self.rank_pos_1, True, self.text_color, self.color)   
         
         self.rank_pos_1_rect = self.rank_pos_1_img.get_rect()
-        # self.rank_pos_1_rect.left = self.x + 20
         self.rank_pos_1_rect.center = self.rect.center
         self.rank_pos_1_rect.top = self.y + 120
 
         self.rank_2_name = self.game.rank_2_name
         self.rank_2_val = self.game.rank_2_val
         self.rank_pos_2 = f"2. {self.rank_2_name}: {self.rank_2_val} pts."
-        self.rank_pos_2_img = self.font.render(self.rank_pos_2, True, self.text_color,
-                                            self.color)   
+        self.rank_pos_2_img = self.font.render(
+            self.rank_pos_2, True, self.text_color, self.color)   
         
         self.rank_pos_2_rect = self.rank_pos_2_img.get_rect()
         self.rank_pos_2_rect.center = self.rect.center
@@ -83,8 +85,8 @@ class Highscore:
         self.rank_3_name = self.game.rank_3_name
         self.rank_3_val = self.game.rank_3_val
         self.rank_pos_3 = f"3. {self.rank_3_name}: {self.rank_3_val} pts."
-        self.rank_pos_3_img = self.font.render(self.rank_pos_3, True, self.text_color,
-                                            self.color)   
+        self.rank_pos_3_img = self.font.render(
+            self.rank_pos_3, True, self.text_color, self.color)   
         
         self.rank_pos_3_rect = self.rank_pos_3_img.get_rect()
         self.rank_pos_3_rect.center = self.rect.center
@@ -93,9 +95,14 @@ class Highscore:
     def drawme(self):
         # Draw leaderboard.
         pygame.draw.rect(self.game.screen, self.color, self.rect)
-        pygame.draw.rect(self.game.screen, self.frame_color, self.rect, width=5)
+        pygame.draw.rect(self.game.screen, self.frame_color, self.rect, 
+                         width=5)
       
-        self.game.screen.blit(self.title_img, (self.title_x, self.title_y))
-        self.game.screen.blit(self.rank_pos_1_img, (self.rank_pos_1_rect.x, self.rank_pos_1_rect.y))
-        self.game.screen.blit(self.rank_pos_2_img, (self.rank_pos_2_rect.x, self.rank_pos_2_rect.y))
-        self.game.screen.blit(self.rank_pos_3_img, (self.rank_pos_3_rect.x, self.rank_pos_3_rect.y))
+        self.game.screen.blit(
+            self.title_img, (self.title_x, self.title_y))
+        self.game.screen.blit(self.rank_pos_1_img,
+                              (self.rank_pos_1_rect.x, self.rank_pos_1_rect.y))
+        self.game.screen.blit(self.rank_pos_2_img,
+                              (self.rank_pos_2_rect.x, self.rank_pos_2_rect.y))
+        self.game.screen.blit(self.rank_pos_3_img,
+                              (self.rank_pos_3_rect.x, self.rank_pos_3_rect.y))
