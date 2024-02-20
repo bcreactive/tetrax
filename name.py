@@ -2,7 +2,7 @@ import pygame
 
 
 class Name:
-    """The name class creates a functionality to enter a name, if a new 
+    """The name class creates functionality to enter a name, if a new 
     highscore is set. The player is asked to chose characters using the
     arrow keys <up> or <down>. Use <right> key to confirm the previewed
     character or <left> key to delete, set your name with <end>."""
