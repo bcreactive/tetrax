@@ -543,10 +543,14 @@ class Game:
         for i in self.moving_blocks:
             i.rect.x += 40
 
+        pygame.mixer.Channel(6).play(pygame.mixer.Sound("sound/beep.mp3")) 
+
     def move_left(self):
         self.x -= 40
         for i in self.moving_blocks:
             i.rect.x -= 40
+
+        pygame.mixer.Channel(6).play(pygame.mixer.Sound("sound/beep.mp3")) 
 
     def check_right_turn(self):
         testrects = []
