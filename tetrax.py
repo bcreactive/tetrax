@@ -247,7 +247,7 @@ class Game:
                     self.new_highscore = False
 
                     pygame.mixer.Channel(0).play(
-                        pygame.mixer.Sound("sound/level.mp3"))  
+                        pygame.mixer.Sound("sound/level.mp3"), loops=4) 
     
     def ask_replay(self):
         self.game_active = False
