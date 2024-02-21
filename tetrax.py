@@ -236,6 +236,10 @@ class Game:
         if not self.game_active or self.game_over:
             if not self.new_highscore:
                 if self.button.rect.collidepoint(mouse_pos):
+                    
+                    pygame.mixer.Channel(6).play(
+                        pygame.mixer.Sound("sound/beep.mp3"))  
+                    
                     pygame.time.wait(500)
                     self.__init__()            
                     pygame.mouse.set_visible(False)
