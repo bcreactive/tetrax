@@ -246,13 +246,26 @@ class Game:
                     self.game_active = True  
                     self.new_highscore = False
 
-                    pygame.mixer.Channel(0).play(
-                        pygame.mixer.Sound("sound/level.mp3"), loops=4) 
+                    self.play_sound()
+                    # pygame.mixer.Channel(0).play(
+                    #     pygame.mixer.Sound("sound/level_1.mp3"), loops=4) 
     
     def ask_replay(self):
         self.game_active = False
         pygame.mouse.set_visible(True)
         self.button.__init__(self, "Replay?")
+    
+    def play_sound(self):
+        sound = choice(["1", "2", "3"])
+        if sound == "1":
+            pygame.mixer.Channel(0).play(
+                pygame.mixer.Sound("sound/level_1.mp3"), loops=4) 
+        elif sound == "2":
+            pygame.mixer.Channel(0).play(
+                pygame.mixer.Sound("sound/level_2.mp3"), loops=4) 
+        elif sound == "3":
+            pygame.mixer.Channel(0).play(
+                pygame.mixer.Sound("sound/level_3.mp3"), loops=4) 
         
     def load_title_image(self):
         image = randint(1, 8)
