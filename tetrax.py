@@ -86,7 +86,8 @@ class Game:
 
         self.title_screen = self.load_title_image()
 
-        # self.intro_sound = pygame.mixer_music.load("sound/intro.mp3")
+        self.played_sounds = []
+        self.play_sound()
 
         self.drop_speed = 60
         # Counter for dropping the tile one step.
@@ -104,7 +105,6 @@ class Game:
         self.all_rects = self.create_all_rects()
         self.rects = []
 
-        # self.tile_pool = ["Bar", "Bloc"]
         self.tile_pool = ["L", "Rev_L", "Bloc", "Z", "Rev_Z", "Tri", "Bar"]
 
         self.line_counter = 0
@@ -241,31 +241,101 @@ class Game:
                         pygame.mixer.Sound("sound/beep.mp3"))  
                     
                     pygame.time.wait(500)
-                    self.__init__()            
+                    self.reset_stats()  
                     pygame.mouse.set_visible(False)
                     self.game_active = True  
                     self.new_highscore = False
-
                     self.play_sound()
-                    # pygame.mixer.Channel(0).play(
-                    #     pygame.mixer.Sound("sound/level_1.mp3"), loops=4) 
+                    print(self.played_sounds)
     
     def ask_replay(self):
         self.game_active = False
         pygame.mouse.set_visible(True)
         self.button.__init__(self, "Replay?")
-    
+
+    def reset_stats(self):
+        self.color_set = self.color_sets[randint(0, 7)]
+        self.play_field_color = self.color_set[0]
+        self.play_field.fill(self.play_field_color)
+
+        self.drop_speed = 60
+        self.counter = 0
+        self.tetrx_counter = 0
+
+        self.x = 160
+        self.y = 0
+        self.tile_posture = 0
+
+        self.moving_blocks = []
+        self.static_blocks = []
+        self.rects = []
+
+        self.line_counter = 0
+        self.level = 1
+        self.points = 0
+
+        self.winner = ""
+        self.rank_1_name = ""
+        self.rank_1_val = 0
+        self.rank_2_name = ""
+        self.rank_2_val = 0
+        self.rank_3_name = ""
+        self.rank_3_val = 0
+
+        self.game_active = False
+        self.game_over = False
+        self.new_highscore = False
+
+        self.rightmove_possible = True
+        self.leftmove_possible = True
+        self.rightturn_possible = True
+        self.leftturn_possible = True
+        self.step_active = True
+        self.waiting = False
+
+        self.current_tile = self.get_next_tile()
+        self.next_tile = self.get_next_tile()
+
+        self.tile = Tile(self, self.x, self.y, self.current_tile)
+        self.tile.create_tile_blocks()
+
+        self.scorefield = Scorefield(self)
+        self.button = Button(self, "Play!")
+        self.savegame = self.load_savefile()
+        self.set_hiscores()
+        self.highscore = Highscore(self)
+        self.name = Name(self)
+
     def play_sound(self):
-        sound = choice(["1", "2", "3"])
-        if sound == "1":
-            pygame.mixer.Channel(0).play(
-                pygame.mixer.Sound("sound/level_1.mp3"), loops=4) 
-        elif sound == "2":
-            pygame.mixer.Channel(0).play(
-                pygame.mixer.Sound("sound/level_2.mp3"), loops=4) 
-        elif sound == "3":
-            pygame.mixer.Channel(0).play(
-                pygame.mixer.Sound("sound/level_3.mp3"), loops=4) 
+        if len(self.played_sounds) == 5:
+            self.played_sounds = []
+
+        sound = choice(["1", "2", "3", "4", "5"])
+
+        if not sound in self.played_sounds:
+            if sound == "1":
+                self.played_sounds.append("1")
+                pygame.mixer.Channel(0).play(
+                    pygame.mixer.Sound("sound/level_1.mp3"), loops=4) 
+            elif sound == "2":
+                self.played_sounds.append("2")
+                pygame.mixer.Channel(0).play(
+                    pygame.mixer.Sound("sound/level_2.mp3"), loops=4) 
+            elif sound == "3":
+                self.played_sounds.append("3")
+                pygame.mixer.Channel(0).play(
+                    pygame.mixer.Sound("sound/level_3.mp3"), loops=4)
+            elif sound == "4":
+                self.played_sounds.append("4")
+                pygame.mixer.Channel(0).play(
+                    pygame.mixer.Sound("sound/level_4.mp3"), loops=4) 
+            elif sound == "5":
+                self.played_sounds.append("5")
+                pygame.mixer.Channel(0).play(
+                    pygame.mixer.Sound("sound/intro.mp3"), loops=8) 
+            return
+        else:
+            self.play_sound()
         
     def load_title_image(self):
         image = randint(1, 8)
