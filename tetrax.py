@@ -87,7 +87,8 @@ class Game:
         self.title_screen = self.load_title_image()
 
         self.played_sounds = []
-        self.play_sound()
+        # self.play_sound()
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound("sound/intro.mp3")) 
 
         self.drop_speed = 60
         # Counter for dropping the tile one step.
@@ -246,7 +247,6 @@ class Game:
                     self.game_active = True  
                     self.new_highscore = False
                     self.play_sound()
-                    print(self.played_sounds)
     
     def ask_replay(self):
         self.game_active = False
@@ -307,10 +307,10 @@ class Game:
         self.name = Name(self)
 
     def play_sound(self):
-        if len(self.played_sounds) == 5:
+        if len(self.played_sounds) == 4:
             self.played_sounds = []
 
-        sound = choice(["1", "2", "3", "4", "5"])
+        sound = choice(["1", "2", "3", "4"])
 
         if not sound in self.played_sounds:
             if sound == "1":
@@ -329,10 +329,6 @@ class Game:
                 self.played_sounds.append("4")
                 pygame.mixer.Channel(0).play(
                     pygame.mixer.Sound("sound/level_4.mp3"), loops=4) 
-            elif sound == "5":
-                self.played_sounds.append("5")
-                pygame.mixer.Channel(0).play(
-                    pygame.mixer.Sound("sound/intro.mp3"), loops=8) 
             return
         else:
             self.play_sound()
