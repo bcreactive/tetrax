@@ -77,7 +77,6 @@ class Game:
                             ], 
                         ] 
         self.color_set = self.color_sets[randint(0, 7)]
-        self.bg_color = (0, 0, 0)
 
         self.play_field = pygame.Surface((400, 720))
         self.play_field_rect = pygame.Rect(0, 0, 400, 720)
@@ -310,7 +309,7 @@ class Game:
         if len(self.played_sounds) == 4:
             self.played_sounds = []
 
-        sound = choice(["1", "2", "3", "4"])
+        sound = choice(["1", "2", "3", "4", "5"])
 
         if not sound in self.played_sounds:
             if sound == "1":
@@ -329,6 +328,10 @@ class Game:
                 self.played_sounds.append("4")
                 pygame.mixer.Channel(0).play(
                     pygame.mixer.Sound("sound/level_4.mp3"), loops=4) 
+            elif sound == "5":
+                self.played_sounds.append("5")
+                pygame.mixer.Channel(0).play(
+                    pygame.mixer.Sound("sound/level_5.mp3"), loops=4)
             return
         else:
             self.play_sound()
