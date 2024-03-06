@@ -1,0 +1,16 @@
+description:
+
+use arrow-keys to move the tetromino left/right.
+use n or m to rotate / arrow-key down to activate fast drop.
+
+a level-up is reached, if a  10 lines are destroyed:
+this will increase the speed and the lines are worth more points, the colors may change as well.
+
+a tetrx (4 destroyed lines at once) is worth the line points * 10
+
+if the game is lost, the leaderboard is displayed showing the top 3 ranks.
+
+if a new highscore is set, the player is asked to enter a name. 
+use arrows up/down to select a character and set it with arrow ->
+you can delete the characters by pressing arrow <-
+select "end" to save the name
